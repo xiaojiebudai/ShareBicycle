@@ -126,19 +126,25 @@ public class PersonCenterActivity extends FatherActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.ll_person:
+                startActivity(new Intent(this,PersonalDataActivity.class));
                 break;
             case R.id.my_wallet:
                 startActivity(new Intent(this,MyWalletActivity.class));
                 break;
             case R.id.my_riding_history:
+
                 break;
             case R.id.my_foucs_house:
+                startActivity(new Intent(this,MyFoucsHouseListActivity.class));
                 break;
             case R.id.my_foucs_olds:
+                startActivity(new Intent(this,MyFoucsHouseListActivity.class));
                 break;
             case R.id.my_house_look_history:
+                startActivity(new Intent(this,MyFoucsHouseListActivity.class));
                 break;
             case R.id.my_entrust:
+       
                 break;
             case R.id.my_house_idcard:
                 break;
@@ -146,6 +152,7 @@ public class PersonCenterActivity extends FatherActivity {
                 startActivity(new Intent(this,MessageListActivity.class));
                 break;
             case R.id.my_inveter:
+                startActivity(new Intent(this,ShareActivity.class));
                 break;
             case R.id.setting:
                 startActivity(new Intent(this,SettingActivity.class));

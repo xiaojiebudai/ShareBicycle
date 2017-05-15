@@ -192,6 +192,17 @@
         <activity
             android:name="com.sharebicycle.activity.MyWalletActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.ShareActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.TicketListActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.BussnessDetailActivity"
+            android:screenOrientation="portrait"></activity><activity
+            android:name="com.sharebicycle.activity.MyFoucsHouseListActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

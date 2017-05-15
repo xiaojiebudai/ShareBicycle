@@ -68,7 +68,7 @@
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
                 android:paddingTop="5dp"
-
+                android:text="信用分120"
                 android:textColor="@color/white" />
         </LinearLayout>
 

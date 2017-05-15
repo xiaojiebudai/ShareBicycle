@@ -47,12 +47,10 @@ public class SettingActivity extends FatherActivity implements OnClickListener {
                 commonDialog.show();
                 break;
             case R.id.ll_clear:
-                showWaitDialog();
                 try{
                     FileUtils.clearAllCache(this);
                 }catch (Exception e){
                 }
-                dismissWaitDialog();
                 break;
             case R.id.ll_money_des:
 

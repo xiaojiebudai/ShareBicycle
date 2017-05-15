@@ -1,17 +1,21 @@
 package com.sharebicycle.xutils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.sharebicycle.utils.WWToast;
-import com.sharebicycle.utils.ZLog;
 
 import org.xutils.common.Callback.CommonCallback;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.sharebicycle.MyApplication;
+import com.sharebicycle.utils.SharedPreferenceUtils;
+import com.sharebicycle.utils.WWToast;
+import com.sharebicycle.utils.ZLog;
+import com.umeng.socialize.utils.Log;
 
 /**
+ * 旺旺x3请求回掉
  *
- * @author zxj
- * @date 2016年12月8日10:35:31
+ * @author xl
+ * @date 2016-8-1 下午10:15:59
  * @description
  */
 public abstract class WWXCallBack implements CommonCallback<String> {
@@ -22,16 +26,16 @@ public abstract class WWXCallBack implements CommonCallback<String> {
 	/** 不需要错误提示 */
 	private boolean unUsePublicToast;
 
+
 	public WWXCallBack(String modeKey) {
 		super();
 		this.modeKey = modeKey;
 	}
-	public WWXCallBack(String modeKey, boolean unUsePublicToast) {
+	public WWXCallBack(String modeKey,boolean unUsePublicToast) {
 		super();
 		this.modeKey = modeKey;
 		this.unUsePublicToast = unUsePublicToast;
 	}
-
 
 	@Override
 	public void onCancelled(CancelledException arg0) {
@@ -39,7 +43,7 @@ public abstract class WWXCallBack implements CommonCallback<String> {
 
 	@Override
 	public void onError(Throwable arg0, boolean arg1) {
-		ZLog.e("EORROR", ((Exception) arg0).toString());
+		Log.i("ERROR", "EORROR", (Exception) arg0);
 	}
 
 	@Override
@@ -55,11 +59,25 @@ public abstract class WWXCallBack implements CommonCallback<String> {
 		if (data != null) {
 			boolean success = data.getBooleanValue("Success");
 			if (success) {
- 				onAfterSuccessOk(data);
+				onAfterSuccessOk(data);
 			} else {
 				onAfterSuccessError(data);
-				if (!unUsePublicToast){
-					WWToast.showShort(data.getString("Message"));
+				switch (data.getIntValue("ErrCode")) {// 错误码,处理不同业务
+					case 201:// session为空，以防万一（在需要使用session的时候就需要处理）
+						SharedPreferenceUtils.getInstance().clearLoginData();
+						MyApplication.getInstance().updataSessionId(null);
+						MyApplication.getInstance().dealSessionPast();
+						break;
+					case 202:// session过期
+						SharedPreferenceUtils.getInstance().clearLoginData();
+						MyApplication.getInstance().updataSessionId(null);
+						MyApplication.getInstance().dealSessionPast();
+						break;
+					default:
+						if (!unUsePublicToast){
+							WWToast.showShort(data.getString("Message"));
+						}
+						break;
 				}
 			}
 		}
@@ -70,6 +88,6 @@ public abstract class WWXCallBack implements CommonCallback<String> {
 	public abstract void onAfterFinished();
 
 	public void onAfterSuccessError(JSONObject data) {
-	};
+	}
 
 }

@@ -67,11 +67,13 @@ public class SmartLockOpenActivity extends FatherActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_buy_house:
+                startActivity(new Intent(this,HouseListActivity.class));
                 break;
             case R.id.tv_sell_house:
                 startActivity(new Intent(this,HouseSellActivity.class));
                 break;
             case R.id.tv_rent_house:
+                startActivity(new Intent(this,HouseListActivity.class));
                 break;
             case R.id.tv_rentout_house:
                 startActivity(new Intent(this,HouseRentActivity.class));
@@ -80,10 +82,13 @@ public class SmartLockOpenActivity extends FatherActivity {
                 WWToast.showShort("演示例子，敬请期待");
                 break;
             case R.id.ll_lock_list:
+                finish();
                 break;
             case R.id.ll_wtf:
+                WWToast.showShort("演示例子，敬请期待");
                 break;
             case R.id.ll_lock_manage:
+                WWToast.showShort("演示例子，敬请期待");
                 break;
         }
     }

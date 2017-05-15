@@ -99,7 +99,7 @@ public class ShareActivity extends FatherActivity implements PermissionUtil.Perm
                 user = JSON.parseObject(jsonObject.toJSONString(),
                         User.class);
                 if (user != null) {
-                    tvInvetercode.setText(user.InviterNo);
+                    tvInvetercode.setText("您的邀请码为："+user.InviterNo);
                 }
             }
 
