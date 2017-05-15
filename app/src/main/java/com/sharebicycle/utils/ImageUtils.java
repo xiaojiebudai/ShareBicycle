@@ -15,7 +15,6 @@ import org.xutils.common.util.FileUtil;
 
 import java.io.File;
 
-
 /**
  * 图片加载工具类
  *
@@ -50,7 +49,7 @@ public class ImageUtils {
 	 * 设置图片尺寸
 	 */
 	public static void setCommonImage(Context context, String url, ImageView iv, int width, int height) {
-		Glide.with(context).load(url.replace("__", "_" + width + "x" + height)).placeholder(R.mipmap.default_img).dontAnimate().override(width, height).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
+		Glide.with(context).load(url.replace("__", "_" + width + "x" + height)).placeholder(R.mipmap.default_img).dontAnimate().error(R.mipmap.lodingfail).override(width, height).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
 				.into(iv);
 	}
 
@@ -67,7 +66,7 @@ public class ImageUtils {
 	 */
 	public static void setCommonRadiusImage(Context context, String url,
 											ImageView iv) {
-		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
+		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().error(R.mipmap.lodingfail).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
 				.transform(new GlideRoundTransform(context, DEFAULT_RADIUS))
 				.into(iv);
 	}
@@ -77,7 +76,7 @@ public class ImageUtils {
 	 */
 	public static void setOwnRadiusImage(Context context, String url,
 										 ImageView iv, int dp) {
-		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
+		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().error(R.mipmap.lodingfail).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
 				.transform(new GlideRoundTransform(context, dp)).into(iv);
 	}
 
@@ -85,7 +84,7 @@ public class ImageUtils {
 	 * 圆形加载
 	 */
 	public static void setCircleImage(Context context, String url, ImageView iv) {
-		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
+		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().error(R.mipmap.lodingfail).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
 				.transform(new GlideCircleTransform(context)).into(iv);
 	}
 
@@ -93,7 +92,7 @@ public class ImageUtils {
 	 * 圆形加载头像
 	 */
 	public static void setCircleHeaderImage(Context context, String url, ImageView iv) {
-		Glide.with(context).load(url).placeholder(R.mipmap.default_img).dontAnimate().thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
+		Glide.with(context).load(url).placeholder(R.mipmap.defalt_logo).dontAnimate().error(R.mipmap.defalt_logo).thumbnail(0.1F).diskCacheStrategy(DiskCacheStrategy.RESULT).centerCrop()
 				.transform(new GlideCircleTransform(context)).into(iv);
 	}
 

@@ -1,5 +1,14 @@
 package com.sharebicycle.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -13,44 +22,36 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore.Images.ImageColumns;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
+import com.sharebicycle.www.R;
 
 /**
  * 文件工具
- * 
+ *
  * @author xl
- * 
+ *
  */
 public class FileUtils {
 	public static String SDPATH = Environment.getExternalStorageDirectory()
-			+ "/Photo_WW/";
+			+ "/Photo_CYK/";
 
 	/**
 	 * 根文件url
-	 * 
+	 *
 	 * @param name
 	 */
 	public static synchronized String getRootFileUrl(String name) {
-		File file = new File(Environment.getExternalStorageDirectory() + "/WW/");
+		File file = new File(Environment.getExternalStorageDirectory() + "/CYK/");
 		if (!file.exists() && !file.isDirectory()) {
 			file.mkdirs();
 		}
-		return new File(Environment.getExternalStorageDirectory() + "/WW/",
+		return new File(Environment.getExternalStorageDirectory() + "/CYK/",
 				name).getPath();
 
 	}
 
 	/**
 	 * APP包文件url
-	 * 
+	 *
 	 * @param path
 	 * @param name
 	 */
@@ -59,20 +60,21 @@ public class FileUtils {
 		if (Environment.MEDIA_MOUNTED.equals(Environment
 				.getExternalStorageState())) {
 			File file = new File(Environment.getExternalStorageDirectory()
-					.getPath() + "/WW/");
+					.getPath() + "/CYK/");
 			if (!file.exists() && !file.isDirectory()) {
 				file.mkdir();
 			}
-			return new File(Environment.getExternalStorageDirectory() + "/WW/"
+			return new File(Environment.getExternalStorageDirectory() + "/CYK/"
 					+ path, name).getPath();
 		} else {
+			WWToast.showShort(R.string.no_find_sdcard);
 			return "SD Card Error!";
 		}
 	}
 
 	/**
 	 * APP包缓存dir
-	 * 
+	 *
 	 * @param path
 	 */
 	public static String getpackageCacheDir(Context context, String path) {
@@ -95,7 +97,7 @@ public class FileUtils {
 
 	/**
 	 * 获取缓存目录大小
-	 * 
+	 *
 	 * @param context
 	 * @return
 	 * @throws Exception
@@ -117,7 +119,7 @@ public class FileUtils {
 
 	/**
 	 * 清空缓存
-	 * 
+	 *
 	 * @param context
 	 */
 	public static void clearAllCache(Context context) {
@@ -129,12 +131,12 @@ public class FileUtils {
 	}
 
 	/**
-	 * 删除文件
-	 * 
+	 * 删除文件/或者文件夹
+	 *
 	 * @param dir
 	 * @return
 	 */
-	private static boolean deleteDir(File dir) {
+	public static boolean deleteDir(File dir) {
 		if (dir != null && dir.isDirectory()) {
 			String[] children = dir.list();
 			for (int i = 0; i < children.length; i++) {
@@ -175,7 +177,7 @@ public class FileUtils {
 
 	/**
 	 * 格式化单位
-	 * 
+	 *
 	 * @param size
 	 * @return
 	 */
@@ -212,7 +214,7 @@ public class FileUtils {
 
 	/**
 	 * 获取版本号信息
-	 * 
+	 *
 	 * @return 当前应用的版本号
 	 */
 	public static String getVersionName(Context context) {
@@ -230,7 +232,7 @@ public class FileUtils {
 
 	/**
 	 * 获取版本号
-	 * 
+	 *
 	 * @return 当前应用的版本code
 	 */
 	public static int getVersionCode(Context context) {
@@ -248,7 +250,7 @@ public class FileUtils {
 
 	/**
 	 * 获得本地的语言环境
-	 * 
+	 *
 	 * @author xl
 	 * @version 创建时间：2015-10-28
 	 */
@@ -258,7 +260,7 @@ public class FileUtils {
 
 	/**
 	 * 本地语言是不是为"en"
-	 * 
+	 *
 	 * @author xl
 	 * @version 创建时间：2015-10-28
 	 */
@@ -268,7 +270,7 @@ public class FileUtils {
 
 	/**
 	 * 获得缩放后的Bitmap
-	 * 
+	 *
 	 * @param filePath
 	 * @return
 	 */
@@ -290,17 +292,18 @@ public class FileUtils {
 	public static final int MESSAGE_FAIL = -1;
 
 	/**
-	 * 
+	 *
 	 * 获得压缩后的图片的保存路径
-	 * 
+	 *
 	 * @param filePath
 	 *            路径
+	 *            标记
 	 * @param handler
-	 * 
+	 *
 	 * @return
 	 */
 	public static void getCompressedBitmapFileUrl(final String filePath,
-			final int tag, final Handler handler) {
+												  final int tag, final Handler handler) {
 
 		final Bitmap compressedBitmap = getCompressedBitmap(filePath, 0, 0);
 		new Thread(new Runnable() {
@@ -335,12 +338,12 @@ public class FileUtils {
 
 	/**
 	 * 计算压缩比例
-	 * 
+	 *
 	 * @param options
 	 * @return
 	 */
 	private static int calculateInSampleSize(BitmapFactory.Options options,
-			int h, int w) {
+											 int h, int w) {
 		final int height = options.outHeight;
 		final int width = options.outWidth;
 		ZLog.showPost(height + "..." + width);
@@ -372,7 +375,7 @@ public class FileUtils {
 
 	/**
 	 * 创建Tmp文件
-	 * 
+	 *
 	 * @author xl
 	 * @version 创建时间：2015-11-11
 	 */
@@ -385,14 +388,14 @@ public class FileUtils {
 					.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
 					Locale.CHINA).format(new Date());
-			String fileName = "jsh88_" + timeStamp + "";
+			String fileName = "Img_" + timeStamp + "";
 			File tmpFile = new File(pic, fileName + ".jpg");
 			return tmpFile;
 		} else {
 			File cacheDir = context.getCacheDir();
 			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
 					Locale.CHINA).format(new Date());
-			String fileName = "szhysy_" + timeStamp + "";
+			String fileName = "Img_" + timeStamp + "";
 			File tmpFile = new File(cacheDir, fileName + ".jpg");
 			return tmpFile;
 		}
@@ -411,7 +414,7 @@ public class FileUtils {
 
 	/**
 	 * 修改的压缩图片
-	 * 
+	 *
 	 * @author xl
 	 * @date:2016-2-29下午5:46:53
 	 * @description 摒弃之前的图片选择设计
@@ -448,7 +451,66 @@ public class FileUtils {
 		return newUrl;
 	}
 
-	 /***
+	/**
+	 * 修改的压缩图片
+	 *
+	 * @author xl
+	 * @date:2016-2-29下午5:46:53
+	 * @description 摒弃之前的图片选择设计
+	 * @param filePath
+	 * @return
+	 */
+	public static String getCompressedImageFileUrl1(String filePath,int maxInSampleSize) {
+
+		try {
+			File file = new File(filePath);
+			FileInputStream fis = new FileInputStream(file);
+			int available = fis.available();
+			fis.close();
+			if (available < 300 * 1024) {
+				return filePath;
+			}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+		}
+
+		final Bitmap compressedBitmap = getCompressedImageBitmap1(filePath, 0, 0,maxInSampleSize);
+
+		String newUrl = FileUtils.getRootFileUrl("IMG_"
+				+ System.currentTimeMillis() + ".jpg");
+		FileOutputStream fos;
+		try {
+			fos = new FileOutputStream(new File(newUrl));
+			compressedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos);
+			compressedBitmap.recycle();
+			fos.flush();
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return newUrl;
+	}
+	/**
+	 * 获得缩放后的Bitmap
+	 *
+	 * @param filePath
+	 * @return
+	 */
+	private static Bitmap getCompressedImageBitmap1(String filePath, int height,
+													int width,int maxInSampleSize) {
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(filePath, options);
+		// Calculate inSampleSize
+		options.inSampleSize = calculateImageInSampleSize(options, height,
+				width);
+		options.inSampleSize=options.inSampleSize>maxInSampleSize?maxInSampleSize:options.inSampleSize;
+		ZLog.showPost("inSampleSize------"+options.inSampleSize);
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		return BitmapFactory.decodeFile(filePath, options);
+	}
+	/***
 	 * Description:
 	 * @author ZXJ
 	 * @date 2016-9-6
@@ -471,12 +533,12 @@ public class FileUtils {
 		}
 		return newUrl;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 获得缩放后的Bitmap
-	 * 
+	 *
 	 * @param filePath
 	 * @return
 	 */
@@ -495,7 +557,7 @@ public class FileUtils {
 
 	/**
 	 * 计算压缩比例
-	 * 
+	 *
 	 * @param options
 	 * @return
 	 */

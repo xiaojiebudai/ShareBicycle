@@ -47,4 +47,5 @@ dependencies {
     // -------------------- 以上三个库是必须依赖的 ----------------------------
 //    compile 'cn.bingoogolapple:bga-swipebacklayout:1.0.7@aar'
       compile 'com.wdullaer:materialdatetimepicker:3.1.1'
+    compile project(':ucrop')
 }

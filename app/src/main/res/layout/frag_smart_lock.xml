@@ -1,57 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white"
-    android:layout_height="match_parent">
+    android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/head_operation_height"
-        android:background="@color/gray_bg"
-       >
+        android:background="@color/gray_bg">
 
         <RelativeLayout
             android:id="@+id/rl_head_left"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:minWidth="50dp" >
+            android:minWidth="50dp">
 
             <TextView
                 android:id="@+id/tv_head_left"
                 android:layout_width="@dimen/head_image_size"
                 android:layout_height="@dimen/head_image_size"
-                android:background="@mipmap/lock_fenl_icon"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:background="@mipmap/lock_fenl_icon" />
         </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_head_center"
             android:layout_width="match_parent"
-            android:textSize="@dimen/text_large_size"
-            android:textColor="#383838"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:text="配对过的设备"
-            android:gravity="center" />
+            android:textColor="#383838"
+            android:textSize="@dimen/text_large_size" />
 
         <RelativeLayout
             android:id="@+id/rl_head_right"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:minWidth="50dp" >
+            android:minWidth="50dp">
 
             <TextView
                 android:id="@+id/tv_head_right"
                 android:layout_width="wrap_content"
+                android:layout_height="@dimen/head_image_size"
                 android:layout_centerInParent="true"
                 android:background="@mipmap/lock_download_icon"
-                android:textColor="@color/white"
-                android:layout_height="@dimen/head_image_size" />
+                android:textColor="@color/white" />
         </RelativeLayout>
 
     </RelativeLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/lv_data"
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp"></android.support.v7.widget.RecyclerView>
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/lv_data"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"></android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </LinearLayout>

@@ -56,7 +56,6 @@ public class SmartLockFragment extends FatherFragment implements View.OnClickLis
                 WWToast.showShort("演示例子，敬请期待");
             }
         });
-
         lvData.setHasFixedSize(true);
         lvData.setLayoutManager(new LinearLayoutManager(getActivity()));
         lvData.setItemAnimator(new DefaultItemAnimator());

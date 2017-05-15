@@ -5,7 +5,8 @@
     <color name="colorAccent">#FF4081</color>
     <!-- 主色调-->
     <color name="color_main">#6FBA2C</color>
-
+    <!-- 透明 -->
+    <color name="transparent">#0000</color>
     <!-- 白 -->
     <color name="white">#FFFFFFFF</color>
     <!-- 背景 -->
@@ -25,4 +26,6 @@
     <!-- 淡灰色 -->
     <color name="text_gray_s">#AEAEAE</color>
     <color name="colorPrimaryDarkTrans">#CCf57257</color>
+    <!-- 大红色 -->
+    <color name="red_b">#FF4F4F</color>
 </resources>

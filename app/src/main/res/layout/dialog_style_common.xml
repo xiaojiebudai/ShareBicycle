@@ -57,8 +57,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@color/white"
             android:gravity="center"
-            android:textColor="@color/text_f7" />
+            android:textColor="@color/color_main" />
 
         <View
             android:layout_width="0.6dp"
@@ -70,8 +71,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:background="@color/color_main"
             android:gravity="center"
-            android:textColor="@color/text_f7" />
+            android:textColor="@color/white" />
     </LinearLayout>
 
 </LinearLayout>
