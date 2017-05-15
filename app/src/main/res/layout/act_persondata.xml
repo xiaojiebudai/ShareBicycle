@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="223dp"
+        android:background="@mipmap/user_bg"
+        android:gravity="center_horizontal"
+        android:id="@+id/ll_person"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/head_operation_height"
+            android:clipToPadding="true">
+
+            <RelativeLayout
+                android:id="@+id/rl_head_left"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:minWidth="50dp">
+
+                <TextView
+                    android:id="@+id/tv_head_left"
+                    android:layout_width="@dimen/head_image_size"
+                    android:layout_height="@dimen/head_image_size"
+                    android:layout_centerInParent="true" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_head_center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center" />
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/img_header"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/defalt_logo" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="xxxxx"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/tv_xinyong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_black_shape"
+            android:paddingBottom="5dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:paddingTop="5dp"
+            android:text="xxxxx"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/my_wallet"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+
+            android:text="@string/my_wallet"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginRight="10dp"
+            android:id="@+id/tv_money"
+            android:text="￥10.00"
+            android:textColor="@color/text_c1"
+            android:textSize="@dimen/text_sample_size"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/my_riding_history"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我的行程"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_foucs_house"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我关注的新房"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size"  />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_foucs_olds"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我关注的二手房/租房"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_house_look_history"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我的看房记录"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_entrust"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我的委托"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_house_idcard"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我的房屋凭证"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size"  />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_message"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="我的消息"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/my_inveter"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="邀请好友"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout> <LinearLayout
+        android:id="@+id/setting"
+        android:layout_marginTop="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_weight="1"
+            android:text="设置"
+            android:textColor="@color/text_f7"
+            android:textSize="@dimen/text_normal_size"  />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/arrow_right_icon" />
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>

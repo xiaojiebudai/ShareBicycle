@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="library-1.0.9">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/a40e735e684f8624aa1625e8818154d7d6255a82/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/a40e735e684f8624aa1625e8818154d7d6255a82/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.baserecycleradapter/library/1.0.9/62017cf78089769d9cec1291a253bff7167279c6/library-1.0.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
