@@ -128,6 +128,7 @@ public class PersonCenterActivity extends FatherActivity {
             case R.id.ll_person:
                 break;
             case R.id.my_wallet:
+                startActivity(new Intent(this,MyWalletActivity.class));
                 break;
             case R.id.my_riding_history:
                 break;
@@ -147,6 +148,7 @@ public class PersonCenterActivity extends FatherActivity {
             case R.id.my_inveter:
                 break;
             case R.id.setting:
+                startActivity(new Intent(this,SettingActivity.class));
                 break;
         }
     }

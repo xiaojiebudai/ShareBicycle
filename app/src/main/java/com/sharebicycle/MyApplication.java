@@ -8,9 +8,13 @@ import android.os.Looper;
 import android.text.TextUtils;
 
 import com.sharebicycle.activity.MainActivity;
+import com.sharebicycle.utils.Constants;
 import com.sharebicycle.utils.Consts;
 import com.sharebicycle.utils.SharedPreferenceUtils;
 import com.sharebicycle.utils.WWToast;
+import com.umeng.socialize.Config;
+import com.umeng.socialize.PlatformConfig;
+import com.umeng.socialize.UMShareAPI;
 
 import org.xutils.x;
 
@@ -70,6 +74,13 @@ public class MyApplication extends Application {
 		x.Ext.setDebug(true);
 		WWToast.init(this);
 		sessionId = SharedPreferenceUtils.getInstance().getSessionId();
+		Config.DEBUG = false;
+		UMShareAPI.get(this);
+		PlatformConfig.setQQZone(Constants.QQ_APP_ID, Constants.QQ_APP_KEY);
+		PlatformConfig.setSinaWeibo(Constants.SINA_APP_KEY,
+				Constants.SINA_APP_SECRET);
+		Config.REDIRECT_URL="http://sns.whalecloud.com/sina2/callback";
+		PlatformConfig.setWeixin(Constants.WX_APP_ID, Constants.WX_APP_KEY);
 	}
 	//保证应用不crash
 	private void install() {

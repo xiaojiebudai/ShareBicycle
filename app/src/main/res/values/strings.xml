@@ -7,7 +7,6 @@
         <string name="order">订单</string>
         <string name="person_center">个人中心</string>
         <string name="share">分享</string>
-        <string name="self_surport">优客商城</string>
         <!-- zxj -->
         <string name="my_wallet">我的钱包</string>
         <string name="can_withdraw">可提现余额</string>
@@ -15,7 +14,7 @@
         <string name="my_collect">我的收藏</string>
         <string name="my_address">我的收货地址</string>
         <string name="open_shop">推广团队</string>
-        <string name="setting">系统设置</string>
+        <string name="setting">设置</string>
         <string name="acountsafe">账户安全</string>
         <string name="user_login">账号登录</string>
         <string name="please_input_username">请输入您的账号</string>
@@ -239,8 +238,7 @@
         <string name="set_pay_psw">设置支付密码</string>
         <string name="pay_psw_limit">支付密码只能为6位纯数字</string>
         <string name="set_success">设置成功</string>
-        <string name="share_title">常优客</string>
-        <string name="share_content">你消费,我买单!常优客总有你想不到的惊喜！</string>
+
         <string name="comm_success">评价成功</string>
         <string name="yin_pay">银联支付</string>
         <string name="viewpager_indicator">%1$d/%2$d</string>
@@ -318,18 +316,9 @@
         <string name="withdraw_money_with_colon">提现金额:</string>
         <string name="handling_charge_with_colon">服  务  费 :</string>
         <string name="agency_rekou_with_colon">代理补扣:</string>
-        <string name="agency_tips0">温馨提示：最低金额500元起提,请输入整百数</string>
-        <string name="agency_withdraw_tips">提现说明</string>
-        <string name="about_agency_withdraw">关于提现</string>
-        <string name="agency_withdraw_item1">1、区域合作提现日为每个月的10日</string>
-        <string name="agency_withdraw_item2">2、提现申请提交后常优客后台将在2个工作日内处理完成</string>
-        <string name="agency_withdraw_item3">3、提现金额提交后余额将需要后台审核后才会扣减，请勿重复提交</string>
-        <string name="agency_withdraw_item4">4、单个区域的余额单独处理，分开提现</string>
-        <string name="agency_withdraw_item5">5、个人提现金额需要为整万数</string>
-        <string name="about_fee">关于手续费</string>
-        <string name="about_fee_item1">1、合作商提现的手续费为提现总金额的20%</string>
-        <string name="about_fee_item2">2、区域合作商费用补扣金额为扣除手续费后金额的30%</string>
-        <string name="agency_withdraw_tips1">%1$s余额需要后台审核才会扣减，请勿重复提交！我们将在2个工作日内处理完成，请您耐心等待！</string>
+
+
+
         <string name="ok1">好的</string>
         <string name="commit_ok">提交成功</string>
         <string name="repayment_detail">补交明细</string>
@@ -489,9 +478,9 @@
         <string name="search_you_want">搜索你想要的商品</string>
         <string name="recharge_center">充值中心</string>
         <string name="happy_area">幸福专区</string>
-        <string name="e_union">优客商家</string>
+
         <string name="shop_order">商城订单</string>
-        <string name="e_union_order">优客商家订单</string>
+
         <string name="wait_seller_makesure">待商家接单</string>
         <string name="all_order">全部订单</string>
         <string name="recommend_product">推荐商品</string>
@@ -513,8 +502,7 @@
         <string name="integral_pay">积分支付</string>
         <string name="immediately_buy">立即购买</string>
         <string name="start_app">开始体验</string>
-        <string name="service_phone">0755-23000509</string>
-        <string name="func_close">此功能暂未开放,如需升级,请联系客服0755-23000509</string>
+
         <string name="recommend_seller">推荐商家</string>
         <string name="choice_area_colon">选择区域 :</string>
         <string name="service_provider_fee">服务商费用</string>
@@ -538,12 +526,7 @@
         <string name="get_img_fail_try_again">获取图片失败，请换张图试试</string>
         <string name="symbol">标志性建筑物/商圈</string>
         <string name="please_download_wx_app">请先下载微信客户端</string>
-        <string name="vip">VIP</string>
-        <string name="common_user">普通用户</string>
-        <string name="common_vip">普通会员</string>
-        <string name="san">三星会员</string>
-        <string name="er">二星会员</string>
-        <string name="yi">一星会员</string>
+
         <string name="integral_20000">20000积分</string>
         <string name="integral_10000">10000积分</string>
         <string name="integral_1000">1000积分</string>
@@ -601,8 +584,7 @@
         <string name="service_seller">服务商</string>
         <string name="double_clike_exit">再按一次退出应用</string>
         <string name="distribution_level">分销等级</string>
-        <!--2017年4月16日20:01:47  tips:   新增activity标题  可能会修改-->
-        <string name="advantage_distribution">优分销</string>
+
         <string name="good_detail">商品详情</string>
         <string name="offline_pay">线下支付</string>
         <string name="goods_money_colon">货款:</string>
