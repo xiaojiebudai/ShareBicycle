@@ -144,7 +144,7 @@ public class PersonCenterActivity extends FatherActivity {
                 startActivity(new Intent(this,MyFoucsHouseListActivity.class));
                 break;
             case R.id.my_entrust:
-       
+
                 break;
             case R.id.my_house_idcard:
                 break;
