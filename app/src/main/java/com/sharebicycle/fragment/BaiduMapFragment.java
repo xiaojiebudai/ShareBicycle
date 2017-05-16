@@ -1,6 +1,7 @@
 package com.sharebicycle.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,12 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.PolylineOptions;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.activity.LoginActivity;
 import com.sharebicycle.activity.PersonCenterActivity;
@@ -31,7 +35,10 @@ public class BaiduMapFragment extends FatherFragment {
     private AMapLocationClientOption locationOption = null;
     private TextureMapView mapView;
     private AMap aMap;
-
+    //以前的定位点
+    private LatLng oldLatLng;
+    //是否是第一次定位
+    private boolean isFirstLatLng;
     @Override
     protected int getLayoutId() {
         return R.layout.frag_baidu;
@@ -44,6 +51,7 @@ public class BaiduMapFragment extends FatherFragment {
             mGroup = inflater.inflate(getLayoutId(), container, false);
             mapView = (TextureMapView) mGroup.findViewById(R.id.map);
             mapView.onCreate(savedInstanceState);
+            isFirstLatLng=true;
             aMap = mapView.getMap();
             UiSettings mUiSettings = aMap.getUiSettings();//实例化UiSettings类对象
 
@@ -59,9 +67,7 @@ public class BaiduMapFragment extends FatherFragment {
             myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
             aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
             aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-            aMap.setMinZoomLevel(20F);
-            aMap.setMaxZoomLevel(20F);
-
+            aMap.moveCamera(CameraUpdateFactory.zoomTo(20F));
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -170,7 +176,14 @@ public class BaiduMapFragment extends FatherFragment {
         mOption.setLocationCacheEnable(true); //可选，设置是否使用缓存定位，默认为true
         return mOption;
     }
+    /**绘制两个坐标点之间的线段,从以前位置到现在位置*/
+    private void setUpMap(LatLng oldData, LatLng newData ) {
+        // 绘制一个大地曲线
+        aMap.addPolyline((new PolylineOptions())
+                .add(oldData, newData)
+                .geodesic(true).color(Color.GREEN));
 
+    }
     /**
      * 定位监听
      */
@@ -201,6 +214,20 @@ public class BaiduMapFragment extends FatherFragment {
                     sb.append("区域 码   : " + location.getAdCode() + "\n");
                     sb.append("地    址    : " + location.getAddress() + "\n");
                     sb.append("兴趣点    : " + location.getPoiName() + "\n");
+
+//                //定位成功
+                    LatLng newLatLng =new LatLng(location.getLatitude(),location.getLongitude());
+                    if(isFirstLatLng){
+                        //记录第一次的定位信息
+                        oldLatLng = newLatLng;
+                        isFirstLatLng = false;
+                    }
+                    //位置有变化
+                    if(oldLatLng != newLatLng){
+                        setUpMap( oldLatLng , newLatLng );
+                        oldLatLng = newLatLng;
+                    }
+
                 } else {
                     //定位失败
                     sb.append("定位失败" + "\n");
