@@ -106,7 +106,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="5dp"
-                    android:src="@mipmap/umeng_socialize_qq" />
+                    android:src="@mipmap/qqkongjian_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -133,7 +133,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="5dp"
-                    android:src="@mipmap/umeng_socialize_qq" />
+                    android:src="@mipmap/qq_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="5dp"
-                    android:src="@mipmap/umeng_socialize_wechat" />
+                    android:src="@mipmap/weixin_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -188,7 +188,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="5dp"
-                    android:src="@mipmap/umeng_socialize_wechat" />
+                    android:src="@mipmap/pengyouquan_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -215,7 +215,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:padding="5dp"
-                    android:src="@mipmap/umeng_socialize_wechat" />
+                    android:src="@mipmap/xinlang_icon" />
 
                 <TextView
                     android:layout_width="wrap_content"
