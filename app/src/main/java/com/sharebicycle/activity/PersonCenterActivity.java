@@ -132,7 +132,7 @@ public class PersonCenterActivity extends FatherActivity {
                 startActivity(new Intent(this,MyWalletActivity.class));
                 break;
             case R.id.my_riding_history:
-
+                startActivity(new Intent(this,RidingHistoryActivity.class));
                 break;
             case R.id.my_foucs_house:
                 startActivity(new Intent(this,MyFoucsHouseListActivity.class));

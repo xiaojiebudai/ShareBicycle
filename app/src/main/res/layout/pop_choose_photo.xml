@@ -37,7 +37,7 @@
         android:background="@drawable/bg_white_shape"
         android:gravity="center"
         android:text="@string/cancel"
-        android:textColor="@color/color_main"
+        android:textColor="@color/red_b"
         android:textSize="@dimen/text_large_size" />
 
 </LinearLayout>

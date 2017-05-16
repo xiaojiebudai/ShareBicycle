@@ -204,6 +204,14 @@
         <activity
             android:name="com.sharebicycle.activity.MyFoucsHouseListActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.RechagerActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.RidingHistoryActivity"
+            android:screenOrientation="portrait"></activity> <activity
+            android:name="com.sharebicycle.activity.RidingDetailActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

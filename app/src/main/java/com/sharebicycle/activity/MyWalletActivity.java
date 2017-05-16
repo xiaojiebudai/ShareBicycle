@@ -84,6 +84,7 @@ public class MyWalletActivity extends FatherActivity {
                 startActivity(new Intent(this,BussnessDetailActivity.class));
                 break;
             case R.id.tv_recharge:
+                startActivity(new Intent(this,RechagerActivity.class));
                 break;
         }
     }
