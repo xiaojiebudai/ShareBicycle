@@ -24,5 +24,5 @@ public class Message {
 	/**发送人名称*/
 	public String SendName;
 	
-
+public boolean isSelect;
 }
