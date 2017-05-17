@@ -62,5 +62,10 @@
             android:src="@mipmap/index_location_btn" />
     </LinearLayout>
 
-
+    <ImageView
+        android:layout_width="45dp"
+        android:paddingBottom="15dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/index_location_icon" />
 </FrameLayout>

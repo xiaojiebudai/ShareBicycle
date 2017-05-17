@@ -2,6 +2,7 @@ package com.sharebicycle.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,12 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
@@ -64,17 +67,6 @@ public class BaiduMapFragment extends FatherFragment {
             aMap.setTrafficEnabled(true);// 显示实时交通状况
             //地图模式可选类型：MAP_TYPE_NORMAL,MAP_TYPE_SATELLITE,MAP_TYPE_NIGHT
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 地图模式
-            MyLocationStyle   myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
-            myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 设置圆形的边框颜色
-            myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));// 设置圆形的填充颜色
-            myLocationStyle.strokeWidth(0F);
-
-            myLocationStyle.myLocationIcon(BitmapDescriptorFactory
-                    .fromResource(R.mipmap.index_location_icon));// 设置小蓝点的图标
-            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-            aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-            aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-            aMap.moveCamera(CameraUpdateFactory.zoomTo(18F));
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -88,10 +80,39 @@ public class BaiduMapFragment extends FatherFragment {
 
 
                 }
+            });     mGroup.findViewById(R.id.iv_local).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startLocation();
+
+                }
+            });
+            aMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+                @Override
+                public void onCameraChange(CameraPosition cameraPosition) {
+
+                }
+
+                @Override
+                public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                    WWToast.showShort(cameraPosition.target.toString());
+
+                }
             });
 
         }
+
+        initLocation();
+        startLocation();
         return mGroup;
+    }
+    /**
+     * 根据动画按钮状态，调用函数animateCamera或moveCamera来改变可视区域
+     */
+    private void changeCamera(CameraUpdate update) {
+
+        aMap.moveCamera(update);
+
     }
 
     @Override
@@ -159,7 +180,6 @@ public class BaiduMapFragment extends FatherFragment {
         locationClient.setLocationOption(locationOption);
         // 设置定位监听
         locationClient.setLocationListener(locationListener);
-        startLocation();
     }
 
     /**
@@ -173,7 +193,7 @@ public class BaiduMapFragment extends FatherFragment {
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
         mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
         mOption.setHttpTimeOut(10000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
-        mOption.setInterval(10000);//可选，设置定位间隔。默认为2秒
+        mOption.setInterval(2000);//可选，设置定位间隔。默认为2秒
         mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是true
         mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
         mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
@@ -199,54 +219,33 @@ public class BaiduMapFragment extends FatherFragment {
         public void onLocationChanged(AMapLocation location) {
             if (null != location) {
 
-                StringBuffer sb = new StringBuffer();
                 //errCode等于0代表定位成功，其他的为定位失败，具体的可以参照官网定位错误码说明
                 if (location.getErrorCode() == 0) {
-                    sb.append("定位成功" + "\n");
-                    sb.append("定位类型: " + location.getLocationType() + "\n");
-                    sb.append("经    度    : " + location.getLongitude() + "\n");
-                    sb.append("纬    度    : " + location.getLatitude() + "\n");
-                    sb.append("精    度    : " + location.getAccuracy() + "米" + "\n");
-                    sb.append("提供者    : " + location.getProvider() + "\n");
 
-                    sb.append("速    度    : " + location.getSpeed() + "米/秒" + "\n");
-                    sb.append("角    度    : " + location.getBearing() + "\n");
-                    // 获取当前提供定位服务的卫星个数
-                    sb.append("星    数    : " + location.getSatellites() + "\n");
-                    sb.append("国    家    : " + location.getCountry() + "\n");
-                    sb.append("省            : " + location.getProvince() + "\n");
-                    sb.append("市            : " + location.getCity() + "\n");
-                    sb.append("城市编码 : " + location.getCityCode() + "\n");
-                    sb.append("区            : " + location.getDistrict() + "\n");
-                    sb.append("区域 码   : " + location.getAdCode() + "\n");
-                    sb.append("地    址    : " + location.getAddress() + "\n");
-                    sb.append("兴趣点    : " + location.getPoiName() + "\n");
 
 //                //定位成功
                     LatLng newLatLng =new LatLng(location.getLatitude(),location.getLongitude());
-                    if(isFirstLatLng){
-                        //记录第一次的定位信息
-                        oldLatLng = newLatLng;
-                        isFirstLatLng = false;
-                    }
-                    //位置有变化
-                    if(oldLatLng != newLatLng){
-                        setUpMap( oldLatLng , newLatLng );
-                        oldLatLng = newLatLng;
-                    }
+                    changeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                            newLatLng, 18, 20, 0)));
+                    stopLocation();
+//                    if(isFirstLatLng){
+//                        //记录第一次的定位信息
+//                        oldLatLng = newLatLng;
+//                        isFirstLatLng = false;
+//                    }
+//                    //位置有变化
+//                    if(oldLatLng != newLatLng){
+//                        setUpMap( oldLatLng , newLatLng );
+//                        oldLatLng = newLatLng;
+//                    }
 
                 } else {
                     //定位失败
-                    sb.append("定位失败" + "\n");
-                    sb.append("错误码:" + location.getErrorCode() + "\n");
-                    sb.append("错误信息:" + location.getErrorInfo() + "\n");
-                    sb.append("错误描述:" + location.getLocationDetail() + "\n");
+
                 }
 
                 //解析定位结果，
-                String result = sb.toString();
 
-            } else {
 
             }
         }
