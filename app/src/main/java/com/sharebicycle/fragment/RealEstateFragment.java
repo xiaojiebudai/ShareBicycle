@@ -1,5 +1,6 @@
 package com.sharebicycle.fragment;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -21,6 +22,8 @@ import com.github.library.BaseViewHolder;
 import com.github.library.listener.OnRecyclerItemClickListener;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.activity.FatherActivity;
+import com.sharebicycle.activity.HouseDetailActivity;
+import com.sharebicycle.activity.HouseListActivity;
 import com.sharebicycle.api.ApiUser;
 import com.sharebicycle.been.Message;
 import com.sharebicycle.been.SmartLockHistory;
@@ -67,7 +70,7 @@ public class RealEstateFragment extends FatherFragment {
     @Override
     protected void initView() {
         View headerView = mInflater.inflate(R.layout.real_estate_header, null);
-        headerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        headerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mFragments.add(RealEstateClassFragment.getInstance(RealEstateClassFragment.buy));
         mFragments.add(RealEstateClassFragment.getInstance(RealEstateClassFragment.rent));
@@ -116,7 +119,7 @@ public class RealEstateFragment extends FatherFragment {
         mAdapter.setOnRecyclerItemClickListener(new OnRecyclerItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
+                startActivity(new Intent(getActivity(), HouseDetailActivity.class));
             }
         });
         lvData.setHasFixedSize(true);

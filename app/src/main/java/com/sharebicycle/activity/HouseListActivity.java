@@ -1,5 +1,6 @@
 package com.sharebicycle.activity;
 
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -91,7 +92,7 @@ public class HouseListActivity extends FatherActivity {
         mAdapter.setOnRecyclerItemClickListener(new OnRecyclerItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                WWToast.showShort("演示例子，敬请期待");
+                startActivity(new Intent(HouseListActivity.this,HouseDetailActivity.class));
             }
         });
 

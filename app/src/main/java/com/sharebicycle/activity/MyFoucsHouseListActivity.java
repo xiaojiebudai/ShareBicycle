@@ -1,5 +1,6 @@
 package com.sharebicycle.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -82,7 +83,7 @@ public class MyFoucsHouseListActivity extends FatherActivity {
         mAdapter.setOnRecyclerItemClickListener(new OnRecyclerItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-
+                startActivity(new Intent(MyFoucsHouseListActivity.this,HouseDetailActivity.class));
             }
         });
         lvData.setHasFixedSize(true);
