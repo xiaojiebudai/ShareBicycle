@@ -62,12 +62,14 @@ public class BaiduMapFragment extends FatherFragment {
             aMap.setTrafficEnabled(true);// 显示实时交通状况
             //地图模式可选类型：MAP_TYPE_NORMAL,MAP_TYPE_SATELLITE,MAP_TYPE_NIGHT
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 地图模式
-            MyLocationStyle myLocationStyle;
-            myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
+            MyLocationStyle   myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
+            myLocationStyle.strokeColor(getResources().getColor(R.color.color_main));
+            myLocationStyle.radiusFillColor(getResources().getColor(R.color.transparent));
+            myLocationStyle.strokeWidth(5F);
             myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
             aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
             aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-            aMap.moveCamera(CameraUpdateFactory.zoomTo(20F));
+            aMap.moveCamera(CameraUpdateFactory.zoomTo(18F));
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

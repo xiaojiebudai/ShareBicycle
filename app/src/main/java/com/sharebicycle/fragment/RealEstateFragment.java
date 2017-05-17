@@ -91,7 +91,7 @@ public class RealEstateFragment extends FatherFragment {
             @Override
             public void onRefresh() {
                 mCurrentPage = 0;
-                requestData();
+//                requestData();
             }
         });
         // 添加滚动监听。
@@ -103,11 +103,14 @@ public class RealEstateFragment extends FatherFragment {
                     if (mCurrentPage >= totalCount) {
                         WWToast.showShort(R.string.nomore_data);
                     } else {
-                        requestData();
+//                        requestData();
                     }
                 }
             }
         });
+        for (int i = 0; i <20 ; i++) {
+            list.add(new Message());
+        }
 
         mAdapter = new BaseRecyclerAdapter<Message>(getActivity(), list, R.layout.real_eatate_list) {
             @Override
@@ -130,7 +133,7 @@ public class RealEstateFragment extends FatherFragment {
         mAdapter.addHeaderView(headerView);
         lvData.setAdapter(mAdapter);
 
-        requestData();
+//        requestData();
     }
 
     private void requestData() {
