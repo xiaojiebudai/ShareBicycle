@@ -35,6 +35,7 @@
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.autofocus" />
 
+
     <application
         android:name="com.sharebicycle.MyApplication"
         android:allowBackup="true"

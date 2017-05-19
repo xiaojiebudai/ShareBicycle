@@ -101,7 +101,6 @@ public class BaiduMapFragment extends FatherFragment {
 
                 @Override
                 public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                    WWToast.showShort(cameraPosition.target.toString());
 
                 }
             });
