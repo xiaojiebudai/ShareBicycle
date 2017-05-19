@@ -1,12 +1,14 @@
 package com.sharebicycle.fragment;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -17,16 +19,20 @@ import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.CircleOptions;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.PolylineOptions;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.activity.LoginActivity;
 import com.sharebicycle.activity.PersonCenterActivity;
 import com.sharebicycle.activity.ScanActivity;
+import com.sharebicycle.utils.DensityUtil;
 import com.sharebicycle.utils.WWToast;
 import com.sharebicycle.www.R;
 
@@ -112,6 +118,22 @@ public class BaiduMapFragment extends FatherFragment {
     private void changeCamera(CameraUpdate update) {
 
         aMap.moveCamera(update);
+
+    }
+    private Marker marker;
+    private void addmark(double latitude, double longitude) {
+
+        if (marker == null) {
+            marker = aMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                            .decodeResource(getResources(), R.mipmap.arp)))
+                    .draggable(true));
+        } else {
+            marker.setPosition(new LatLng(latitude, longitude));
+            mapView.invalidate();
+        }
+
 
     }
 
@@ -226,7 +248,8 @@ public class BaiduMapFragment extends FatherFragment {
 //                //定位成功
                     LatLng newLatLng =new LatLng(location.getLatitude(),location.getLongitude());
                     changeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                            newLatLng, 18, 20, 0)));
+                            newLatLng, 17, 30, 0)));
+                    addmark(location.getLatitude(),location.getLongitude());
                     stopLocation();
 //                    if(isFirstLatLng){
 //                        //记录第一次的定位信息
