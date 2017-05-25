@@ -140,20 +140,20 @@ public class ShareActivity extends FatherActivity implements PermissionUtil.Perm
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.ll_qq_zone:
-                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.QZONE, new CustomShareListener(ShareActivity.this), "http://img.szhysy.cn/Image/t1/1abfc1dfefae413a8acdcee2e074f366__.png", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
+                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.QZONE, new CustomShareListener(ShareActivity.this), "", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
                 break;
             case R.id.ll_qq:
-                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.QQ, new CustomShareListener(ShareActivity.this), "http://img.szhysy.cn/Image/t1/1abfc1dfefae413a8acdcee2e074f366__.png", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
+                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.QQ, new CustomShareListener(ShareActivity.this), "", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
                 break;
             case R.id.ll_wx:
-                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.WEIXIN, new CustomShareListener(ShareActivity.this), "http://img.szhysy.cn/Image/t1/1abfc1dfefae413a8acdcee2e074f366__.png", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
+                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.WEIXIN, new CustomShareListener(ShareActivity.this), "", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
 
                 break;
             case R.id.ll_wx_circle:
-                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.WEIXIN_CIRCLE, new CustomShareListener(ShareActivity.this), "http://img.szhysy.cn/Image/t1/1abfc1dfefae413a8acdcee2e074f366__.png", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
+                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.WEIXIN_CIRCLE, new CustomShareListener(ShareActivity.this), "", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
                 break;
             case R.id.ll_sina:
-                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.SINA, new CustomShareListener(ShareActivity.this), "http://img.szhysy.cn/Image/t1/1abfc1dfefae413a8acdcee2e074f366__.png", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
+                doShare = ShareUtils.shareSignle(this, SHARE_MEDIA.SINA, new CustomShareListener(ShareActivity.this), "", "标题", "测试内容", Constants.SHARE_URL + user.InviterNo);
                 break;
         }
     }
