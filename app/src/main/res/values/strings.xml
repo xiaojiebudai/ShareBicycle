@@ -639,6 +639,12 @@
         <string name="please_choice_certificate_upload">请选择凭证上传</string>
         <string name="certificate_no_upload">凭证没有上传完成</string>
 
-
+    <string name="connected">已连接设备</string>
+    <string name="connecting">连接中....</string>
+    <string name="disconnected">断开连接</string>
+    <string name="no_data">No data</string>
+    <string name="label_data">透传接收:</string>
+    <string name="label_device_address">MAC地址:</string>
+    <string name="label_state">连接状态:</string>
 
 </resources>

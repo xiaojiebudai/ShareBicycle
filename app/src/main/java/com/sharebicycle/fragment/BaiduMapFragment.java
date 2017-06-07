@@ -30,6 +30,7 @@ import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.PolylineOptions;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.activity.LoginActivity;
+import com.sharebicycle.activity.OpenActivity;
 import com.sharebicycle.activity.PersonCenterActivity;
 import com.sharebicycle.activity.ScanActivity;
 import com.sharebicycle.utils.DensityUtil;
@@ -50,6 +51,7 @@ public class BaiduMapFragment extends FatherFragment {
     private LatLng oldLatLng;
     //是否是第一次定位
     private boolean isFirstLatLng;
+
     @Override
     protected int getLayoutId() {
         return R.layout.frag_baidu;
@@ -62,7 +64,7 @@ public class BaiduMapFragment extends FatherFragment {
             mGroup = inflater.inflate(getLayoutId(), container, false);
             mapView = (TextureMapView) mGroup.findViewById(R.id.map);
             mapView.onCreate(savedInstanceState);
-            isFirstLatLng=true;
+            isFirstLatLng = true;
             aMap = mapView.getMap();
             UiSettings mUiSettings = aMap.getUiSettings();//实例化UiSettings类对象
 
@@ -71,13 +73,13 @@ public class BaiduMapFragment extends FatherFragment {
 //            mUiSettings.setMyLocationButtonEnabled(true); //显示默认的定位按钮
             MyLocationStyle myLocationStyle;
             myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
-          myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
             myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
             myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                     .decodeResource(getResources(), R.mipmap.arp)));
             myLocationStyle.strokeWidth(5);
-            myLocationStyle. strokeColor(getResources().getColor(R.color.color_main));//设置定位蓝点精度圆圈的边框颜色的方法。
-            myLocationStyle .radiusFillColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的填充颜色的方法。
+            myLocationStyle.strokeColor(getResources().getColor(R.color.color_main));//设置定位蓝点精度圆圈的边框颜色的方法。
+            myLocationStyle.radiusFillColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的填充颜色的方法。
             aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
 //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
             aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
@@ -88,17 +90,18 @@ public class BaiduMapFragment extends FatherFragment {
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(MyApplication.isLogin()){
-                        Intent intent=new Intent();
+                    if (MyApplication.isLogin()) {
+                        Intent intent = new Intent();
                         intent.setClass(getActivity(), ScanActivity.class);
-                        BaiduMapFragment.this.startActivityForResult(intent,888);
-                    }else{
+                        BaiduMapFragment.this.startActivityForResult(intent, 888);
+                    } else {
                         startActivity(new Intent(getActivity(), LoginActivity.class));
                     }
 
 
                 }
-            });     mGroup.findViewById(R.id.iv_local).setOnClickListener(new View.OnClickListener() {
+            });
+            mGroup.findViewById(R.id.iv_local).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     startLocation();
@@ -123,6 +126,7 @@ public class BaiduMapFragment extends FatherFragment {
         startLocation();
         return mGroup;
     }
+
     /**
      * 根据动画按钮状态，调用函数animateCamera或moveCamera来改变可视区域
      */
@@ -131,7 +135,9 @@ public class BaiduMapFragment extends FatherFragment {
         aMap.moveCamera(update);
 
     }
+
     private Marker marker;
+
     private void addmark(double latitude, double longitude) {
 
         if (marker == null) {
@@ -151,11 +157,11 @@ public class BaiduMapFragment extends FatherFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(data!=null){
-            if(requestCode==888){
+        if (data != null) {
+            if (requestCode == 888) {
                 //扫描结果
-                String s=data.getStringExtra("codedContent");
-                WWToast.showShort(s);
+                String s = data.getStringExtra("codedContent");
+                BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra("Data", s));
             }
         }
     }
@@ -236,14 +242,18 @@ public class BaiduMapFragment extends FatherFragment {
         mOption.setLocationCacheEnable(true); //可选，设置是否使用缓存定位，默认为true
         return mOption;
     }
-    /**绘制两个坐标点之间的线段,从以前位置到现在位置*/
-    private void setUpMap(LatLng oldData, LatLng newData ) {
+
+    /**
+     * 绘制两个坐标点之间的线段,从以前位置到现在位置
+     */
+    private void setUpMap(LatLng oldData, LatLng newData) {
         // 绘制一个大地曲线
         aMap.addPolyline((new PolylineOptions())
                 .add(oldData, newData)
                 .geodesic(true).color(Color.GREEN));
 
     }
+
     /**
      * 定位监听
      */
@@ -257,7 +267,7 @@ public class BaiduMapFragment extends FatherFragment {
 
 
 //                //定位成功
-                    LatLng newLatLng =new LatLng(location.getLatitude(),location.getLongitude());
+                    LatLng newLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     changeCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
                             newLatLng, 17, 30, 0)));
 //                    addmark(location.getLatitude(),location.getLongitude());

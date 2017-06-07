@@ -34,7 +34,12 @@
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.autofocus" />
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:name="com.sharebicycle.MyApplication"
@@ -43,7 +48,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/ww_app_theme">
-
+        <service
+            android:name="com.sharebicycle.service.BluetoothLeService"
+            android:enabled="true" />
         <!-- 设置key -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
@@ -213,6 +220,9 @@
             android:screenOrientation="portrait"></activity>
         <activity
             android:name="com.sharebicycle.activity.RidingDetailActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.OpenActivity"
             android:screenOrientation="portrait"></activity>
     </application>
 
