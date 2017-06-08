@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/head_operation" />
+
+
+    <!--押金充值;实名认证;完成-->
+
+    <com.baoyachi.stepview.HorizontalStepView
+        android:id="@+id/step_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@color/color_main"
+        android:paddingBottom="10dp" />
+
+    <LinearLayout
+        android:id="@+id/ll_pay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/head_operation_height"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="押金（可退）" />
+
+            <TextView
+                android:id="@+id/tv_pay_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="￥199.00" />
+        </LinearLayout>
+
+        <View style="@style/cutline_fine" />
+
+        <LinearLayout
+            android:id="@+id/ll_wx_pay"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/head_operation_height"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@mipmap/wechat_small" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:text="微信支付" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_alipay"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/head_operation_height"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@mipmap/alipay_small" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_weight="1"
+                android:text="支付宝支付" />
+
+        </LinearLayout>
+
+        <View style="@style/cutline_fine" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="押金可原路退回"
+            android:textColor="@color/text_gray_s"
+            android:textSize="@dimen/text_normal_size" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="车费不在押金中扣除，需另外缴纳"
+            android:textColor="@color/text_gray_s"
+            android:textSize="@dimen/text_normal_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_idcard_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/ed_name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_select_bar_height"
+            android:layout_marginTop="10dp"
+            android:background="@color/gray_bg"
+            android:hint="请输入姓名"
+            android:maxLength="11"
+            android:paddingLeft="20dp"
+            android:singleLine="true"
+            android:textColorHint="@color/text_c1"
+            android:textSize="@dimen/text_large_size" />
+
+        <EditText
+            android:id="@+id/ed_idcard"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/common_select_bar_height"
+            android:layout_marginTop="10dp"
+            android:background="@color/gray_bg"
+            android:hint="请输入身份证号"
+            android:paddingLeft="20dp"
+            android:singleLine="true"
+            android:textColorHint="@color/text_c1"
+            android:textSize="@dimen/text_large_size" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_success"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@mipmap/finish_icon" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="恭喜您注册成功"
+            android:textColor="@color/color_main"
+            android:textSize="@dimen/text_large_size" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/button_ok"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/common_select_bar_height"
+        android:background="@color/color_main"
+        android:text="下一步"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_large_size" />
+</LinearLayout>

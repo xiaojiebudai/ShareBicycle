@@ -224,6 +224,9 @@
         <activity
             android:name="com.sharebicycle.activity.OpenActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.CashPledgeStep"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

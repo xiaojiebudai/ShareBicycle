@@ -38,10 +38,6 @@ import java.util.List;
 
 public class OpenActivity extends FatherActivity {
 
-
-    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
-    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-
     private StringBuffer sbValues;
 
     private TextView mConnectionState;
@@ -301,13 +297,13 @@ private  boolean isOpen=false;
     @Override
     protected void onResume() {
         super.onResume();
-//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        unregisterReceiver(mGattUpdateReceiver);
+        unregisterReceiver(mGattUpdateReceiver);
     }
 
     @Override
