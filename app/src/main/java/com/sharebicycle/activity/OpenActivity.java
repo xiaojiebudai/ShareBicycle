@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sharebicycle.api.ApiLock;
 import com.sharebicycle.been.Device;
 import com.sharebicycle.service.BluetoothLeService;
+import com.sharebicycle.utils.TimeUtil;
 import com.sharebicycle.utils.WWToast;
 import com.sharebicycle.www.R;
 import com.sharebicycle.xutils.WWXCallBack;
@@ -26,6 +27,8 @@ import com.sharebicycle.xutils.WWXCallBack;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +48,7 @@ public class OpenActivity extends FatherActivity {
     boolean connect_status_bit = false;
     private boolean isOpen = false;
     private Chronometer chronoeter;
-
+    private SimpleDateFormat sdf;
 
     @Override
     protected int getLayoutId() {
@@ -67,6 +70,8 @@ public class OpenActivity extends FatherActivity {
         chronoeter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer ch) {
+
+                chronoeter.setText(sdf.format(new Date(SystemClock.elapsedRealtime() - ch.getBase())));
                 // 如果从开始计时到现在超过了60s
 //                if (SystemClock.elapsedRealtime() - ch.getBase() > 60 * 1000)
 //                {
@@ -80,6 +85,7 @@ public class OpenActivity extends FatherActivity {
     @Override
     protected void initValues() {
         scanData = getIntent().getStringExtra("Data");
+        sdf = new SimpleDateFormat("HH:mm:ss");  // 时间样式
         initDefautHead("设备开锁", false);
     }
 
