@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/color_main"
+    android:layout_height="match_parent">
+<include layout="@layout/head_operation"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/tv_header"
+            android:layout_width="80dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="80dp"
+            android:src="@mipmap/defalt_logo" />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="18123503243"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_normal_size" />
+
+        <TextView
+            android:id="@+id/tv_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="编号：34324657567"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_normal_size" />
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_white_point"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_long"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="10"
+                android:textColor="@color/color_main"
+
+                android:textSize="@dimen/text_xlarge_size" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="骑行距离(km)"
+                android:textColor="@color/text_c1"
+                android:textSize="@dimen/text_small_size" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50.00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_xxlarge_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="累计骑行（公里）"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_normal_size" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7.00"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_xxlarge_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="节约碳排量（千克）"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_normal_size" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="16232"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_xxlarge_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="运动成就（大卡）"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_normal_size" />
+
+
+            </LinearLayout>
+        </LinearLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:text="去支付"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/color_main"
+            android:background="@color/white"
+            android:textSize="@dimen/text_normal_size"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>
