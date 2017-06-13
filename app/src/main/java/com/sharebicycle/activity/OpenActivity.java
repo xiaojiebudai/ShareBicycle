@@ -43,9 +43,6 @@ import java.util.List;
 public class OpenActivity extends FatherActivity {
 
     private StringBuffer sbValues;
-
-    private TextView mConnectionState;
-
     private String mDeviceAddress;
 
     private BluetoothLeService mBluetoothLeService;
@@ -70,25 +67,15 @@ public class OpenActivity extends FatherActivity {
     protected void initView() {
         // Sets up UI references.
 
-        mConnectionState = (TextView) findViewById(R.id.connection_state);
         sbValues = new StringBuffer();
         chronoeter = (Chronometer) findViewById(R.id.chronometer);
-        //设置开始计时时间
-        chronoeter.setBase(SystemClock.elapsedRealtime());
-        //启动计时器
-        chronoeter.start();
+
 
         //为计时器绑定监听事件
         chronoeter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer ch) {
-
-                // 如果从开始计时到现在超过了60s
-//                if (SystemClock.elapsedRealtime() - ch.getBase() > 60 * 1000)
-//                {
-//                    ch.stop();
-//                    chronoeter.setEnabled(true);
-//                }
+                chronoeter.setText(sdf.format(new Date(SystemClock.elapsedRealtime() - ch.getBase())));
             }
         });
 
@@ -112,6 +99,28 @@ public class OpenActivity extends FatherActivity {
 
     }
 
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mGattUpdateReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mServiceConnection);
+        mBluetoothLeService = null;
+        dismissWaitDialog();
+    }
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -142,17 +151,13 @@ public class OpenActivity extends FatherActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                //mConnected = true;
                 connect_status_bit = true;
 
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 finish();
-                updateConnectionState(R.string.disconnected);
                 connect_status_bit = false;
-
-
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
@@ -169,58 +174,17 @@ public class OpenActivity extends FatherActivity {
                 displayData(intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA));
 
             }
-            //Log.d("", msg)
         }
     };
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(mServiceConnection);
-        mBluetoothLeService = null;
-
-    }
-
-    private void updateConnectionState(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mConnectionState.setText(resourceId);
-            }
-        });
-    }
-
     int len_g = 0;
     private long openTime = 0;
-
     private void displayData(byte[] data1) //接收FFE1串口透传数据通道数据
     {
-
         if (data1 != null && data1.length > 0) {
-
             String res = new String(data1);
-
-
             if (sbValues.length() >= 88 || (System.currentTimeMillis() - openTime) < 20000) return;
-
             sbValues.append(res);
-
-
             len_g += data1.length;
-
             if (sbValues.length() >= 5000) sbValues.delete(0, sbValues.length());
 
             ZLog.showPost(res.toString());
@@ -271,7 +235,6 @@ public class OpenActivity extends FatherActivity {
                 }
                 mBluetoothLeService.txxx(openStr, true);//发送字符串数据
                 isOpen = true;
-                updateConnectionState(R.string.connected);
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
                 Toast toast = Toast.makeText(OpenActivity.this, "设备没有连接！", Toast.LENGTH_SHORT);
@@ -285,8 +248,6 @@ public class OpenActivity extends FatherActivity {
 
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
-
-                updateConnectionState(R.string.connected);
                 if (sbValues != null && sbValues.length() > 0) {
                     sbValues.delete(0, sbValues.length());
                 }
@@ -346,21 +307,14 @@ public class OpenActivity extends FatherActivity {
                 taskId = data.getString("TaskId");
                 openStr = device.CommandText;
                 mDeviceAddress = device.Bluetooth;
-                ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
-
-
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
                 if (mBluetoothLeService != null) {
-                    final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+                   mBluetoothLeService.connect(mDeviceAddress);
                 }
 
-                boolean sg;
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-                sg = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-                //getActionBar().setTitle( "="+BluetoothLeService );
-                //mDataField.setText("="+sg );
-                updateConnectionState(R.string.connecting);
-                //
+                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
             }
 
             @Override
@@ -391,12 +345,10 @@ public class OpenActivity extends FatherActivity {
                 mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                 initDefautHead("骑行中", false);
                 WWToast.showShort("开始用车");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
+                //设置开始计时时间
+                chronoeter.setBase(SystemClock.elapsedRealtime());
+                //启动计时器
+                chronoeter.start();
                 isGo = true;
             }
 
