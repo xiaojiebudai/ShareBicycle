@@ -34,6 +34,7 @@ import org.xutils.x;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by ZXJ on 2017/5/23.
@@ -55,7 +56,6 @@ public class OpenActivity extends FatherActivity {
     boolean connect_status_bit = false;
     private boolean isOpen = false;
     private Chronometer chronoeter;
-    private SimpleDateFormat sdf;
 
 
     @Override
@@ -75,7 +75,7 @@ public class OpenActivity extends FatherActivity {
         chronoeter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer ch) {
-                chronoeter.setText(sdf.format(new Date(SystemClock.elapsedRealtime() - ch.getBase())));
+
             }
         });
 
@@ -84,8 +84,6 @@ public class OpenActivity extends FatherActivity {
     @Override
     protected void initValues() {
         scanData = getIntent().getStringExtra("Data");
-        sdf = new SimpleDateFormat("HH:mm:ss");  // 时间样式
-
     }
 
     @Override
@@ -105,13 +103,13 @@ public class OpenActivity extends FatherActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+//        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mGattUpdateReceiver);
+
     }
 
     @Override
@@ -120,6 +118,7 @@ public class OpenActivity extends FatherActivity {
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
         dismissWaitDialog();
+        unregisterReceiver(mGattUpdateReceiver);
     }
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -156,6 +155,7 @@ public class OpenActivity extends FatherActivity {
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
+                WWToast.showShort("开锁失败，请重试");
                 finish();
                 connect_status_bit = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -187,7 +187,6 @@ public class OpenActivity extends FatherActivity {
             len_g += data1.length;
             if (sbValues.length() >= 5000) sbValues.delete(0, sbValues.length());
 
-            ZLog.showPost(res.toString());
             if (sbValues.length() == 88) {
 
                 if (isOpen) {
@@ -315,6 +314,12 @@ public class OpenActivity extends FatherActivity {
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
                  bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
+            }
+
+            @Override
+            public void onError(Throwable arg0, boolean arg1) {
+                WWToast.showShort("开锁失败，请重试");
+                finish();
             }
 
             @Override
