@@ -7,34 +7,40 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.Chronometer;
-import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.amap.api.maps.MapView;
+import com.sharebicycle.MyApplication;
 import com.sharebicycle.api.ApiLock;
 import com.sharebicycle.been.Device;
 import com.sharebicycle.service.BluetoothLeService;
+import com.sharebicycle.utils.Consts;
+import com.sharebicycle.utils.ParamsUtils;
 import com.sharebicycle.utils.WWToast;
-import com.sharebicycle.utils.ZLog;
 import com.sharebicycle.www.R;
 import com.sharebicycle.xutils.WWXCallBack;
 
-import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by ZXJ on 2017/5/23.
@@ -43,6 +49,28 @@ import java.util.TimeZone;
 
 public class OpenActivity extends FatherActivity {
 
+    @BindView(R.id.ll_opening)
+    LinearLayout llOpening;
+    @BindView(R.id.map)
+    MapView map;
+    @BindView(R.id.chronometer)
+    Chronometer chronometer;
+    @BindView(R.id.tv_riding_price)
+    TextView tvRidingPrice;
+    @BindView(R.id.ll_riding)
+    FrameLayout llRiding;
+    @BindView(R.id.tv_finish_price)
+    TextView tvFinishPrice;
+    @BindView(R.id.tv_finish_daijingquan)
+    TextView tvFinishDaijingquan;
+    @BindView(R.id.tv_ok)
+    TextView tvOk;
+    @BindView(R.id.ll_pay)
+    FrameLayout llPay;
+    @BindView(R.id.ll_opened)
+    FrameLayout llOpened;
+    @BindView(R.id.infoOperating)
+    ImageView infoOperatingIV;
     private StringBuffer sbValues;
     private String mDeviceAddress;
 
@@ -54,8 +82,6 @@ public class OpenActivity extends FatherActivity {
 
 
     boolean connect_status_bit = false;
-    private boolean isOpen = false;
-    private Chronometer chronoeter;
 
 
     @Override
@@ -68,14 +94,16 @@ public class OpenActivity extends FatherActivity {
         // Sets up UI references.
 
         sbValues = new StringBuffer();
-        chronoeter = (Chronometer) findViewById(R.id.chronometer);
 
-
+        Animation operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        LinearInterpolator lin = new LinearInterpolator();
+        operatingAnim.setInterpolator(lin);
+        infoOperatingIV.startAnimation(operatingAnim);
         //为计时器绑定监听事件
-        chronoeter.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer ch) {
-
+                long time = SystemClock.elapsedRealtime() - ch.getBase();
             }
         });
 
@@ -83,6 +111,7 @@ public class OpenActivity extends FatherActivity {
 
     @Override
     protected void initValues() {
+        initDefautHead("开锁中。。。", true);
         scanData = getIntent().getStringExtra("Data");
     }
 
@@ -94,10 +123,17 @@ public class OpenActivity extends FatherActivity {
     @Override
     protected void doOperate() {
         sendOpenQr(scanData);
-
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!isGo) {
+                    //20s未开锁直接失败
+                    WWToast.showShort("开锁失败，请重试");
+                    finish();
+                }
+            }
+        }, 20000);
     }
-
-
 
 
     @Override
@@ -120,6 +156,7 @@ public class OpenActivity extends FatherActivity {
         dismissWaitDialog();
         unregisterReceiver(mGattUpdateReceiver);
     }
+
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -155,8 +192,6 @@ public class OpenActivity extends FatherActivity {
 
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
-                WWToast.showShort("开锁失败，请重试");
-                finish();
                 connect_status_bit = false;
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
@@ -172,34 +207,22 @@ public class OpenActivity extends FatherActivity {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE1.equals(action)) //接收FFE2功能配置返回的数据
             {
                 displayData(intent.getByteArrayExtra(BluetoothLeService.EXTRA_DATA));
-
             }
         }
     };
     int len_g = 0;
-    private long openTime = 0;
+
     private void displayData(byte[] data1) //接收FFE1串口透传数据通道数据
     {
         if (data1 != null && data1.length > 0) {
             String res = new String(data1);
-            if (sbValues.length() >= 88 || (System.currentTimeMillis() - openTime) < 20000) return;
+            if (sbValues.length() >= 88) return;
             sbValues.append(res);
             len_g += data1.length;
             if (sbValues.length() >= 5000) sbValues.delete(0, sbValues.length());
 
             if (sbValues.length() == 88) {
-
-                if (isOpen) {
-                    sendOpenData(sbValues.toString(), taskId);
-                    isOpen = false;
-                    openTime = System.currentTimeMillis();
-                    sbValues.delete(0, sbValues.length());
-                } else {
-
-                    closeDevice(sbValues.toString(), mDeviceAddress);
-                }
-
-
+                infoReceive(sbValues.toString(), mDeviceAddress);
             }
         }
 
@@ -233,7 +256,6 @@ public class OpenActivity extends FatherActivity {
                     sbValues.delete(0, sbValues.length());
                 }
                 mBluetoothLeService.txxx(openStr, true);//发送字符串数据
-                isOpen = true;
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
                 Toast toast = Toast.makeText(OpenActivity.this, "设备没有连接！", Toast.LENGTH_SHORT);
@@ -251,9 +273,6 @@ public class OpenActivity extends FatherActivity {
                     sbValues.delete(0, sbValues.length());
                 }
                 mBluetoothLeService.txxx(openStr, true);//发送字符串数据
-                isOpen = true;
-
-
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
                 Toast toast = Toast.makeText(OpenActivity.this, "设备没有连接！", Toast.LENGTH_SHORT);
@@ -278,14 +297,6 @@ public class OpenActivity extends FatherActivity {
     }
 
 
-    public static RequestParams getPostJsonParams(JSONObject jsonObject,
-                                                  String url) {
-        RequestParams params = new RequestParams(url);
-        params.setAsJsonContent(true);
-        params.setBodyContent(jsonObject.toString());
-        return params;
-    }
-
     /**
      * 发送开锁扫码数据
      *
@@ -295,11 +306,11 @@ public class OpenActivity extends FatherActivity {
     private String scanData;
 
     private void sendOpenQr(String scanData) {
-
-        showWaitDialog();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("scanData", scanData);
-        x.http().post(getPostJsonParams(jsonObject, ApiLock.OpenSend()), new WWXCallBack("OpenSend") {
+        jsonObject.put(Consts.KEY_SESSIONID, MyApplication
+                .getInstance().getSessionId());
+        x.http().post(ParamsUtils.getPostJsonParams(jsonObject, ApiLock.OpenSend()), new WWXCallBack("OpenSend") {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
                 Device device = JSONObject.parseObject(data.getString("Data"), Device.class);
@@ -308,18 +319,12 @@ public class OpenActivity extends FatherActivity {
                 mDeviceAddress = device.Bluetooth;
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
                 if (mBluetoothLeService != null) {
-                   mBluetoothLeService.connect(mDeviceAddress);
+                    mBluetoothLeService.connect(mDeviceAddress);
                 }
 
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+                bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-            }
-
-            @Override
-            public void onError(Throwable arg0, boolean arg1) {
-                WWToast.showShort("开锁失败，请重试");
-                finish();
             }
 
             @Override
@@ -332,55 +337,53 @@ public class OpenActivity extends FatherActivity {
     private boolean isGo = false;
 
     /**
-     * 发送开锁数据
-     *
-     * @param scanData
-     * @param taskId
-     */
-    private void sendOpenData(String scanData, String taskId) {
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("receiveData", scanData);
-        jsonObject.put("taskId", taskId);
-        x.http().post(getPostJsonParams(jsonObject, ApiLock.OpenReveice()), new WWXCallBack("OpenReveice") {
-            @Override
-            public void onAfterSuccessOk(JSONObject data) {
-                Device device = JSONObject.parseObject(data.getString("Data"), Device.class);
-
-                mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
-                initDefautHead("骑行中", false);
-                WWToast.showShort("开始用车");
-                //设置开始计时时间
-                chronoeter.setBase(SystemClock.elapsedRealtime());
-                //启动计时器
-                chronoeter.start();
-                isGo = true;
-            }
-
-            @Override
-            public void onAfterFinished() {
-                dismissWaitDialog();
-            }
-        });
-
-    }
-
-    /**
      * 关锁指令
      */
-    private void closeDevice(String receiveData, String address) {
+    private void infoReceive(String receiveData, String address) {
         showWaitDialog();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("receiveData", receiveData);
         jsonObject.put("bluetooth", address);
-        x.http().post(getPostJsonParams(jsonObject, ApiLock.LockReveice()), new WWXCallBack("LockReveice") {
+        jsonObject.put(Consts.KEY_SESSIONID, MyApplication
+                .getInstance().getSessionId());
+        //发送完立马清除
+        if (sbValues != null && sbValues.length() > 0) {
+            sbValues.delete(0, sbValues.length());
+        }
+        x.http().post(ParamsUtils.getPostJsonParams(jsonObject, ApiLock.LockReveice()), new WWXCallBack("LockReveice") {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
                 Device device = JSONObject.parseObject(data.getString("Data"), Device.class);
-                mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
-                WWToast.showShort("关锁成功");
-                startActivity(new Intent(OpenActivity.this, RidingFinishActivity.class));
-                finish();
+                switch (device.CommandName) {
+                    case Device.INIT:
+                        break;
+                    case Device.OPEN:
+                        mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
+                        initDefautHead("骑行中", false);
+                        WWToast.showShort("开始用车");
+                        infoOperatingIV.clearAnimation();
+                        //设置开始计时时间
+                        chronometer.setBase(SystemClock.elapsedRealtime());
+                        //启动计时器
+                        chronometer.start();
+                        isGo = true;
+                        llOpening.setVisibility(View.GONE);
+                        llOpened.setVisibility(View.VISIBLE);
+                        llRiding.setVisibility(View.VISIBLE);
+                        break;
+                    case Device.CLOSE:
+                        mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
+                        WWToast.showShort("关锁成功");
+                        llRiding.setVisibility(View.GONE);
+                        llPay.setVisibility(View.VISIBLE);
+                        break;
+                    case Device.UNKNOW:
+                        break;
+                    default:
+                        break;
+                }
+
+
             }
 
             @Override
@@ -388,5 +391,17 @@ public class OpenActivity extends FatherActivity {
                 dismissWaitDialog();
             }
         });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
+
+    @OnClick(R.id.tv_ok)
+    public void onViewClicked() {
+        finish();
     }
 }

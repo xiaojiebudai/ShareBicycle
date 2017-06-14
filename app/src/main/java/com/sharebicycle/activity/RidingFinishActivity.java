@@ -24,7 +24,7 @@ public class RidingFinishActivity extends FatherActivity {
 
     @Override
     protected void initValues() {
-        initDefautHead("支付订单", false);
+        initDefautHead("骑行报告", false);
     }
 
     @Override
