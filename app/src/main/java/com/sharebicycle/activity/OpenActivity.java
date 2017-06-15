@@ -25,18 +25,23 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.api.ApiLock;
 import com.sharebicycle.been.Device;
+import com.sharebicycle.been.RidingOrder;
 import com.sharebicycle.service.BluetoothLeService;
 import com.sharebicycle.utils.Consts;
 import com.sharebicycle.utils.ParamsUtils;
 import com.sharebicycle.utils.WWToast;
+import com.sharebicycle.utils.WWViewUtil;
+import com.sharebicycle.utils.ZLog;
 import com.sharebicycle.www.R;
 import com.sharebicycle.xutils.WWXCallBack;
 
@@ -111,6 +116,10 @@ public class OpenActivity extends FatherActivity {
             @Override
             public void onChronometerTick(Chronometer ch) {
                 long time = SystemClock.elapsedRealtime() - ch.getBase();
+                if(time>60*60*1000){
+
+                    tvRidingPrice.setText("当前费用:2.00元");
+                }
             }
         });
 
@@ -118,7 +127,7 @@ public class OpenActivity extends FatherActivity {
 
     @Override
     protected void initValues() {
-        initDefautHead("开锁中。。。", true);
+        initDefautHead("开锁中。。。", false);
         scanData = getIntent().getStringExtra("Data");
     }
 
@@ -231,6 +240,7 @@ public class OpenActivity extends FatherActivity {
     {
         if (data1 != null && data1.length > 0) {
             String res = new String(data1);
+            ZLog.showPost(res);
             if (sbValues.length() >= 88) return;
             sbValues.append(res);
             len_g += data1.length;
@@ -355,12 +365,12 @@ public class OpenActivity extends FatherActivity {
      * 关锁指令
      */
     private void infoReceive(String receiveData, String address) {
-        showWaitDialog();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("receiveData", receiveData);
         jsonObject.put("bluetooth", address);
         jsonObject.put(Consts.KEY_SESSIONID, MyApplication
                 .getInstance().getSessionId());
+        ZLog.showPost(receiveData);
         //发送完立马清除
         if (sbValues != null && sbValues.length() > 0) {
             sbValues.delete(0, sbValues.length());
@@ -390,6 +400,7 @@ public class OpenActivity extends FatherActivity {
                     case Device.CLOSE:
                         mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                         WWToast.showShort("关锁成功");
+                        initDefautHead("骑行结束", false);
                         llRiding.setVisibility(View.GONE);
                         llPay.setVisibility(View.VISIBLE);
                         getLastOrder(false);
@@ -405,7 +416,6 @@ public class OpenActivity extends FatherActivity {
 
             @Override
             public void onAfterFinished() {
-                dismissWaitDialog();
             }
         });
     }
@@ -415,15 +425,19 @@ public class OpenActivity extends FatherActivity {
      *
      * @param runing
      */
+    RidingOrder order;
     private void getLastOrder(final boolean runing) {
         RequestParams params = ParamsUtils.getSessionParams(ApiLock.LastOrder());
         x.http().get(params, new WWXCallBack("LastOrder") {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
+                order=JSONObject.parseObject(data.getString("Data"), RidingOrder.class);
                 if (runing) {
                    //骑行中
+                    tvRidingPrice.setText("当前费用:1.00元");
                 } else {
                   //骑行结束
+                    tvFinishPrice.setText(WWViewUtil.numberFormatPrice(order.PayAmt));
                 }
             }
 
@@ -449,12 +463,12 @@ public class OpenActivity extends FatherActivity {
 //            mUiSettings.setMyLocationButtonEnabled(true); //显示默认的定位按钮
         MyLocationStyle myLocationStyle;
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
         myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                 .decodeResource(getResources(), R.mipmap.index_location_icon)));
         myLocationStyle.strokeWidth(5);
-        myLocationStyle.strokeColor(getResources().getColor(R.color.color_main));//设置定位蓝点精度圆圈的边框颜色的方法。
+        myLocationStyle.strokeColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的边框颜色的方法。
         myLocationStyle.radiusFillColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的填充颜色的方法。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
 //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
@@ -471,6 +485,8 @@ public class OpenActivity extends FatherActivity {
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                        cameraPosition.target, 17, 30, 0)));
 
             }
         });
