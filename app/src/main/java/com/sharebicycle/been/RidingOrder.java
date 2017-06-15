@@ -17,6 +17,7 @@ public class RidingOrder {
     public long UserId;
     public String UserName;
     public String Price;
+    public int PriceUnit;
     public String TotalAmt;
     public int Status;
     public int TotalSecond;

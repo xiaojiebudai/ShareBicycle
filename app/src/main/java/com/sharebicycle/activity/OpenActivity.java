@@ -116,8 +116,8 @@ public class OpenActivity extends FatherActivity {
             @Override
             public void onChronometerTick(Chronometer ch) {
                 long time = SystemClock.elapsedRealtime() - ch.getBase();
-                if(time>60*60*1000){
-
+                if (time == 60 * 60 * 1000) {
+//                    int priceNow = (int) (time / (60 * 60 * 1000));
                     tvRidingPrice.setText("当前费用:2.00元");
                 }
             }
@@ -165,12 +165,14 @@ public class OpenActivity extends FatherActivity {
         super.onPause();
         map.onPause();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         map.onSaveInstanceState(outState);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -400,6 +402,7 @@ public class OpenActivity extends FatherActivity {
                     case Device.CLOSE:
                         mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                         WWToast.showShort("关锁成功");
+                        chronometer.stop();
                         initDefautHead("骑行结束", false);
                         llRiding.setVisibility(View.GONE);
                         llPay.setVisibility(View.VISIBLE);
@@ -426,18 +429,25 @@ public class OpenActivity extends FatherActivity {
      * @param runing
      */
     RidingOrder order;
+
     private void getLastOrder(final boolean runing) {
         RequestParams params = ParamsUtils.getSessionParams(ApiLock.LastOrder());
         x.http().get(params, new WWXCallBack("LastOrder") {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
-                order=JSONObject.parseObject(data.getString("Data"), RidingOrder.class);
+                order = JSONObject.parseObject(data.getString("Data"), RidingOrder.class);
                 if (runing) {
-                   //骑行中
+                    //骑行中
                     tvRidingPrice.setText("当前费用:1.00元");
                 } else {
-                  //骑行结束
+                    //骑行结束
                     tvFinishPrice.setText(WWViewUtil.numberFormatPrice(order.PayAmt));
+                    if (order.Status == 1) {
+                        tvOk.setText("去充值");
+                    } else if (order.Status == 2) {
+                        tvOk.setText("确认支付");
+                    }
+
                 }
             }
 
@@ -494,6 +504,14 @@ public class OpenActivity extends FatherActivity {
 
     @OnClick(R.id.tv_ok)
     public void onViewClicked() {
-        finish();
+        //如果Status==1就表示余额不够扣
+//        如果Status==2就是已经扣完费了
+//        Status==0就表示还没收到关锁信息
+        if (order.Status == 1) {
+            finish();
+        } else if (order.Status == 2) {
+            finish();
+        }
+
     }
 }
