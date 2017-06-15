@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
@@ -33,9 +35,17 @@ import com.sharebicycle.activity.LoginActivity;
 import com.sharebicycle.activity.OpenActivity;
 import com.sharebicycle.activity.PersonCenterActivity;
 import com.sharebicycle.activity.ScanActivity;
+import com.sharebicycle.api.ApiLock;
+import com.sharebicycle.api.ApiUser;
+import com.sharebicycle.been.AccountInfo;
 import com.sharebicycle.utils.DensityUtil;
+import com.sharebicycle.utils.ParamsUtils;
 import com.sharebicycle.utils.WWToast;
 import com.sharebicycle.www.R;
+import com.sharebicycle.xutils.WWXCallBack;
+
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 /**
  * Created by ZXJ on 2017/5/10.
@@ -90,6 +100,8 @@ public class BaiduMapFragment extends FatherFragment {
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                   //获取账户金额，判断用车资格
+                    getMoneyNum();
                     if (MyApplication.isLogin()) {
                         Intent intent = new Intent();
                         intent.setClass(getActivity(), ScanActivity.class);
@@ -170,7 +182,47 @@ public class BaiduMapFragment extends FatherFragment {
     protected void initView() {
 
     }
+    /**
+     * 查看是否有骑行中订单
+     *
+     */
+    private void getLastOrder() {
+        RequestParams params = ParamsUtils.getSessionParams(ApiLock.LastOrder());
+        x.http().get(params, new WWXCallBack("LastOrder") {
+            @Override
+            public void onAfterSuccessOk(JSONObject data) {
+            }
 
+            @Override
+            public void onAfterFinished() {
+
+            }
+        });
+    }
+    /**
+     * 获取用户金额
+     */
+    private void getMoneyNum() {
+
+        showWaitDialog();
+        RequestParams params = new RequestParams(ApiUser.getAccountInfo());
+        params.addBodyParameter("sessionId", MyApplication.getInstance()
+                .getSessionId());
+        x.http().get(params, new WWXCallBack("AccountGet") {
+
+            @Override
+            public void onAfterFinished() {
+                dismissWaitDialog();
+            }
+
+            @Override
+            public void onAfterSuccessOk(JSONObject data) {
+                AccountInfo   accountInfo = JSON.parseObject(data.getString("Data"),
+                        AccountInfo.class);
+
+            }
+        });
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -185,6 +237,7 @@ public class BaiduMapFragment extends FatherFragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        getLastOrder();
     }
 
     /**
