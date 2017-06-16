@@ -11,7 +11,9 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -118,10 +120,6 @@ public class OpenActivity extends FatherActivity {
         } else {
             order = JSONObject.parseObject(getIntent().getStringExtra(Consts.KEY_DATA), RidingOrder.class);
         }
-        //注册蓝牙链接相关
-        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-        Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -184,9 +182,15 @@ public class OpenActivity extends FatherActivity {
                 llOpening.setVisibility(View.GONE);
                 llOpened.setVisibility(View.VISIBLE);
                 llRiding.setVisibility(View.VISIBLE);
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+                registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
                 if (mBluetoothLeService != null) {
-                    mBluetoothLeService.connect(mDeviceAddress);
+                    final boolean result = mBluetoothLeService.connect(mDeviceAddress);
                 }
+                Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
+                bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
                 //设置开始计时时间
                 chronometer.setBase(order.BeginTime * 1000);
                 //启动计时器
@@ -236,7 +240,53 @@ public class OpenActivity extends FatherActivity {
         unregisterReceiver(mGattUpdateReceiver);
         map.onDestroy();
     }
+    Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
 
+                if (mBluetoothLeService != null) {
+                    if (mConnected == false) {
+                        final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+                    }
+                }
+            }
+            if (msg.what == 2) {
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mBluetoothLeService.enable_JDY_ble(0);
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mBluetoothLeService.enable_JDY_ble(0);
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mBluetoothLeService.enable_JDY_ble(1);
+                try {
+                    Thread.currentThread();
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                byte[] WriteBytes = new byte[2];
+                WriteBytes[0] = (byte) 0xE7;
+                WriteBytes[1] = (byte) 0xf6;
+                mBluetoothLeService.function_data(WriteBytes);// 发送读取所有IO状态
+            }
+            super.handleMessage(msg);
+        }
+    };
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -406,10 +456,15 @@ public class OpenActivity extends FatherActivity {
                 taskId = data.getString("TaskId");
                 openStr = device.CommandText;
                 mDeviceAddress = device.Bluetooth;
-
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+                registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
                 if (mBluetoothLeService != null) {
-                    mBluetoothLeService.connect(mDeviceAddress);
+                    final boolean result = mBluetoothLeService.connect(mDeviceAddress);
                 }
+                Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
+               bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
 
             }
