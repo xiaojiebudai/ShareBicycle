@@ -546,4 +546,19 @@ public class ApiUser {
     public static final String MySellers() {
         return USER_API + "MySellers";
     }
+    /**
+     * 充值
+     *
+     * @return
+     */
+    public static final String Saving() {
+        return USER_API + "OfflinePay";
+    }/**
+     * 押金
+     *
+     * @return
+     */
+    public static final String Foregift() {
+        return USER_API + "Foregift";
+    }
 }

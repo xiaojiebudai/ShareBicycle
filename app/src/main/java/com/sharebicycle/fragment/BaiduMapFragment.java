@@ -31,13 +31,17 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.PolylineOptions;
 import com.sharebicycle.MyApplication;
+import com.sharebicycle.activity.CashPledgeStep;
 import com.sharebicycle.activity.LoginActivity;
 import com.sharebicycle.activity.OpenActivity;
 import com.sharebicycle.activity.PersonCenterActivity;
+import com.sharebicycle.activity.RechagerActivity;
 import com.sharebicycle.activity.ScanActivity;
 import com.sharebicycle.api.ApiLock;
 import com.sharebicycle.api.ApiUser;
 import com.sharebicycle.been.AccountInfo;
+import com.sharebicycle.been.RidingOrder;
+import com.sharebicycle.utils.Consts;
 import com.sharebicycle.utils.DensityUtil;
 import com.sharebicycle.utils.ParamsUtils;
 import com.sharebicycle.utils.WWToast;
@@ -100,12 +104,16 @@ public class BaiduMapFragment extends FatherFragment {
             mGroup.findViewById(R.id.iv_saoma).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   //获取账户金额，判断用车资格
-                    getMoneyNum();
+
                     if (MyApplication.isLogin()) {
-                        Intent intent = new Intent();
-                        intent.setClass(getActivity(), ScanActivity.class);
-                        BaiduMapFragment.this.startActivityForResult(intent, 888);
+                        if (isPledge) {
+                            Intent intent = new Intent();
+                            intent.setClass(getActivity(), ScanActivity.class);
+                            BaiduMapFragment.this.startActivityForResult(intent, 888);
+                        } else {
+                            startActivity(new Intent(getActivity(), CashPledgeStep.class));
+                        }
+
                     } else {
                         startActivity(new Intent(getActivity(), LoginActivity.class));
                     }
@@ -173,7 +181,7 @@ public class BaiduMapFragment extends FatherFragment {
             if (requestCode == 888) {
                 //扫描结果
                 String s = data.getStringExtra("codedContent");
-                BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra("Data", s));
+                BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra("Data", s).putExtra(Consts.KEY_MODULE, OpenActivity.OPEN));
             }
         }
     }
@@ -182,15 +190,22 @@ public class BaiduMapFragment extends FatherFragment {
     protected void initView() {
 
     }
+
     /**
      * 查看是否有骑行中订单
-     *
      */
     private void getLastOrder() {
         RequestParams params = ParamsUtils.getSessionParams(ApiLock.LastOrder());
         x.http().get(params, new WWXCallBack("LastOrder") {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
+                RidingOrder order = JSONObject.parseObject(data.getString("Data"), RidingOrder.class);
+                //如果Status==1就表示余额不够扣
+//        如果Status==2就是已经扣完费了
+//        Status==0就表示还没收到关锁信息
+                if (order.Status != 2) {
+//                    BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra(Consts.KEY_DATA, data.getString("Data")).putExtra(Consts.KEY_MODULE, OpenActivity.RIDING));
+                }
             }
 
             @Override
@@ -199,6 +214,9 @@ public class BaiduMapFragment extends FatherFragment {
             }
         });
     }
+
+    private boolean isPledge;
+
     /**
      * 获取用户金额
      */
@@ -217,12 +235,15 @@ public class BaiduMapFragment extends FatherFragment {
 
             @Override
             public void onAfterSuccessOk(JSONObject data) {
-                AccountInfo   accountInfo = JSON.parseObject(data.getString("Data"),
+                AccountInfo accountInfo = JSON.parseObject(data.getString("Data"),
                         AccountInfo.class);
 
+                //获取最后订单
+                getLastOrder();
             }
         });
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -237,7 +258,9 @@ public class BaiduMapFragment extends FatherFragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-        getLastOrder();
+
+        //获取账户金额，判断用车资格
+        getMoneyNum();
     }
 
     /**

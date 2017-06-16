@@ -30,7 +30,6 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
-import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.api.ApiLock;
@@ -39,6 +38,7 @@ import com.sharebicycle.been.RidingOrder;
 import com.sharebicycle.service.BluetoothLeService;
 import com.sharebicycle.utils.Consts;
 import com.sharebicycle.utils.ParamsUtils;
+import com.sharebicycle.utils.TimeUtil;
 import com.sharebicycle.utils.WWToast;
 import com.sharebicycle.utils.WWViewUtil;
 import com.sharebicycle.utils.ZLog;
@@ -48,7 +48,10 @@ import com.sharebicycle.xutils.WWXCallBack;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -96,9 +99,29 @@ public class OpenActivity extends FatherActivity {
     boolean connect_status_bit = false;
     private AMap aMap;
 
+    public static final int OPEN = 0;
+    public static final int RIDING = 1;
+    private int model;
+    private double consumeNow;
+
     @Override
     protected int getLayoutId() {
         return R.layout.act_open;
+    }
+
+    @Override
+    protected void initValues() {
+        initDefautHead("开锁中。。。", false);
+        model = getIntent().getIntExtra(Consts.KEY_MODULE, OPEN);
+        if (model == OPEN) {
+            scanData = getIntent().getStringExtra("Data");
+        } else {
+            order = JSONObject.parseObject(getIntent().getStringExtra(Consts.KEY_DATA), RidingOrder.class);
+        }
+        //注册蓝牙链接相关
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
+        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -115,21 +138,24 @@ public class OpenActivity extends FatherActivity {
         chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer ch) {
-                long time = SystemClock.elapsedRealtime() - ch.getBase();
-                if (time == 60 * 60 * 1000) {
-//                    int priceNow = (int) (time / (60 * 60 * 1000));
-                    tvRidingPrice.setText("当前费用:2.00元");
+                long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
+                chronometer.setText(TimeUtil.getTimeDifference(time));
+                long hour = time % (24 * 3600) / 3600+1;
+                if (hour > 0) {
+                    if (order.PriceUnit == 30) {
+                        hour = hour * 2;
+                    }
+                    if(consumeNow!=hour){
+                        consumeNow=hour;
+                        tvRidingPrice.setText("当前费用:" + WWViewUtil.numberFormatPrice(consumeNow) + "元");
+                    }
+
                 }
             }
         });
 
     }
 
-    @Override
-    protected void initValues() {
-        initDefautHead("开锁中。。。", false);
-        scanData = getIntent().getStringExtra("Data");
-    }
 
     @Override
     public void onBackPressed() {
@@ -138,17 +164,45 @@ public class OpenActivity extends FatherActivity {
 
     @Override
     protected void doOperate() {
-        sendOpenQr(scanData);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!isGo) {
-                    //20s未开锁直接失败
-                    WWToast.showShort("开锁失败，请重试");
-                    finish();
+        if (model == OPEN) {
+            sendOpenQr(scanData);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isGo) {
+                        //20s未开锁直接失败
+                        WWToast.showShort("开锁失败，请重试");
+                        finish();
+                    }
                 }
+            }, 20000);
+        } else {
+            if (order != null && order.Status == 0) {
+                //骑行中
+                initDefautHead("骑行中", false);
+                mDeviceAddress = order.Bluetooth;
+                llOpening.setVisibility(View.GONE);
+                llOpened.setVisibility(View.VISIBLE);
+                llRiding.setVisibility(View.VISIBLE);
+                if (mBluetoothLeService != null) {
+                    mBluetoothLeService.connect(mDeviceAddress);
+                }
+                //设置开始计时时间
+                chronometer.setBase(order.BeginTime * 1000);
+                //启动计时器
+                chronometer.start();
+                isGo = true;
+            } else {
+                //骑行结算
+                initDefautHead("骑行结束", false);
+                llOpening.setVisibility(View.GONE);
+                llOpened.setVisibility(View.VISIBLE);
+                llRiding.setVisibility(View.GONE);
+                llPay.setVisibility(View.VISIBLE);
+                tvFinishPrice.setText(WWViewUtil.numberFormatPrice(order.PayAmt));
+                tvOk.setText("去充值");
             }
-        }, 20000);
+        }
     }
 
 
@@ -279,10 +333,14 @@ public class OpenActivity extends FatherActivity {
                 WriteBytes[1] = (byte) 0xf6;
                 mBluetoothLeService.function_data(WriteBytes);// 发送读取所有IO状态
 
-                if (sbValues != null && sbValues.length() > 0) {
-                    sbValues.delete(0, sbValues.length());
+                if (model == OPEN) {
+                    if (sbValues != null && sbValues.length() > 0) {
+                        sbValues.delete(0, sbValues.length());
+                    }
+                    mBluetoothLeService.txxx(openStr, true);//发送字符串数据
                 }
-                mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+
+
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
                 Toast toast = Toast.makeText(OpenActivity.this, "设备没有连接！", Toast.LENGTH_SHORT);
@@ -296,10 +354,14 @@ public class OpenActivity extends FatherActivity {
 
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
-                if (sbValues != null && sbValues.length() > 0) {
-                    sbValues.delete(0, sbValues.length());
+
+                if (model == OPEN) {
+                    if (sbValues != null && sbValues.length() > 0) {
+                        sbValues.delete(0, sbValues.length());
+                    }
+                    mBluetoothLeService.txxx(openStr, true);//发送字符串数据
                 }
-                mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
                 Toast toast = Toast.makeText(OpenActivity.this, "设备没有连接！", Toast.LENGTH_SHORT);
@@ -344,13 +406,11 @@ public class OpenActivity extends FatherActivity {
                 taskId = data.getString("TaskId");
                 openStr = device.CommandText;
                 mDeviceAddress = device.Bluetooth;
-                registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+
                 if (mBluetoothLeService != null) {
                     mBluetoothLeService.connect(mDeviceAddress);
                 }
 
-                Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-                bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
             }
 
@@ -481,7 +541,7 @@ public class OpenActivity extends FatherActivity {
         myLocationStyle.strokeColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的边框颜色的方法。
         myLocationStyle.radiusFillColor(getResources().getColor(R.color.transparent));//设置定位蓝点精度圆圈的填充颜色的方法。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-//aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
+        //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
         aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
 
         aMap.setTrafficEnabled(true);// 显示实时交通状况
@@ -508,10 +568,19 @@ public class OpenActivity extends FatherActivity {
 //        如果Status==2就是已经扣完费了
 //        Status==0就表示还没收到关锁信息
         if (order.Status == 1) {
-            finish();
+            startActivityForResult(new Intent(this, RechagerActivity.class), 999);
         } else if (order.Status == 2) {
             finish();
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 999) {
+                finish();
+            }
+        }
     }
 }

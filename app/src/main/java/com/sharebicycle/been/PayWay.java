@@ -7,6 +7,9 @@ package com.sharebicycle.been;
  */
 public class PayWay {
 
+    public static final int RECHARGE = 2;
+    public static final int PLEDGE = 4;
+
     /* 是否开启 */
     public boolean IsOnline;
     public String PayCode;

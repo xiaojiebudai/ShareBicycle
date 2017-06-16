@@ -21,4 +21,36 @@ public class Consts {
 	public static final String TITLE = "title  ";
 	/** session错误 */
 	public static final String KEY_SESSION_ERROR = "session_error";
+	/**
+	 * 微信支付
+	 */
+	public static final String WX_PAY = "WXPAY";
+	/**
+	 * 支付宝
+	 */
+	public static final String ALI_PAY = "ALIPAY";
+	/**
+	 * 银联
+	 */
+	public static final String UN_PAY = "UNIONPAY";
+	/**
+	 * 可消费返现支付
+	 */
+	public static final String INTER_PAY = "InterPay";
+	/**
+	 * 余额支付
+	 */
+	public static final String BALAN_PAY = "BalanPay";
+	/**
+	 * 网关支付
+	 */
+	public static final String GHTNET_PAY = "GhtNet";
+	/**
+	 * 积分支付
+	 */
+	public static final String INTEG_PAY = "VipPay";
+	/**
+	 * 富有支付
+	 */
+	public static final String FuYou = "FuYou";
 }

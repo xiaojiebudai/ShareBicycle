@@ -1,18 +1,30 @@
 package com.sharebicycle.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 
+import com.sharebicycle.activity.FatherActivity;
 import com.sharebicycle.utils.Consts;
+import com.sharebicycle.utils.safeWebViewBridge.HtmlInteractiveAndroid;
+import com.sharebicycle.utils.safeWebViewBridge.InjectedChromeClient;
 import com.sharebicycle.www.R;
 
-/**
- * Created by ZXJ on 2017/5/10.
+/***
+ * Description:打开网页 Company: wangwanglife Version：1.0
+ *
+ * @author zxj
+ * @date 2016-7-31
  */
-
 public class WebViewActivity extends FatherActivity {
     private WebView webview;
     private String data = "";
@@ -27,8 +39,15 @@ public class WebViewActivity extends FatherActivity {
      * data
      */
     public static final int DATA = 1;
+    /**
+     * pay
+     */
+    public static final int Pay = 2;
+    private boolean noBack = false;
+
     @Override
     protected int getLayoutId() {
+        // TODO Auto-generated method stub
         return R.layout.act_webview;
     }
 
@@ -36,10 +55,19 @@ public class WebViewActivity extends FatherActivity {
     protected void initValues() {
         model = getIntent().getIntExtra(Consts.KEY_MODULE, URL);
         data = getIntent().getStringExtra(Consts.KEY_DATA);
-
-        initDefautHead(getIntent().getStringExtra(Consts.TITLE),true);
-
-
+        TextView center = (TextView) findViewById(R.id.tv_head_center);
+        center.setText(getIntent().getStringExtra(Consts.TITLE));
+        center.setTextColor(getResources().getColor(R.color.white));
+        center.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+        View left = findViewById(R.id.rl_head_left);
+        left.findViewById(R.id.tv_head_left).setBackgroundResource(
+                R.mipmap.arrow_back);
+        left.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override
@@ -48,6 +76,10 @@ public class WebViewActivity extends FatherActivity {
         webview.setInitialScale(25);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        // 这个对象主要是获取返回的数据，进行处理,向读取的URL传送对象
+        HtmlInteractiveAndroid.HtmlInteractiveSetContext(this);
+        webview.setWebChromeClient(new CustomChromeClient("htmlInteracAndroid",
+                HtmlInteractiveAndroid.class));
         webSettings.setBuiltInZoomControls(true);
         webSettings.setSupportZoom(true);
         webSettings.setUseWideViewPort(true);
@@ -69,6 +101,20 @@ public class WebViewActivity extends FatherActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 // 通过内部类定义的方法获取html页面加载的内容，这个需要添加在webview加载完成后的回调中
+                if (model == Pay) {
+                    //隐藏头部返回
+                    view.loadUrl("javascript:window.hideHeader=function(){if(document.getElementsByClassName('sj_header').length>0) document.getElementsByClassName('sj_header')[0].style.display='none';};");
+                    view.loadUrl("javascript:hideHeader()");
+                    if (url.contains("http://api.szhysy.cn/Pay") || url.contains("http://api.zgcyk.net/Pay")|| url.contains("http://api.51wanj.com/Pay")) {
+                        view.loadUrl("javascript:window.htmlInteracAndroid.toast(document.body.innerHTML);");
+                    } else if (url.contains("/newpay/success_popbox.html") && url.contains("RESPONSECODE=0000")) {
+                        noBack = true;
+                        findViewById(R.id.rl_head_left).setVisibility(View.GONE);
+                    } else {
+                        noBack = false;
+                        findViewById(R.id.rl_head_left).setVisibility(View.VISIBLE);
+                    }
+                }
                 super.onPageFinished(view, url);
             }
 
@@ -85,6 +131,9 @@ public class WebViewActivity extends FatherActivity {
             case URL:
                 webview.loadUrl(data);
                 break;
+            case Pay:
+                webview.loadUrl(data);
+                break;
             default:
                 break;
         }
@@ -99,7 +148,9 @@ public class WebViewActivity extends FatherActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-         if (webview.canGoBack()) {
+            if (noBack) {
+                return false;
+            } else if (webview.canGoBack()) {
                 webview.goBack();
             } else {
                 finish();
@@ -108,8 +159,55 @@ public class WebViewActivity extends FatherActivity {
         }
         return true;
     }
+
+    public class CustomChromeClient extends InjectedChromeClient {
+        public CustomChromeClient(String injectedName, Class injectedCls) {
+            super(injectedName, injectedCls);
+        }
+
+        @Override
+        public boolean onJsAlert(WebView view, String url, String message,
+                                 final JsResult result) {
+            // to do your work
+            // ...
+            return super.onJsAlert(view, url, message, result);
+        }
+
+        // 在web上面的进度条的显示
+        @Override
+        public void onProgressChanged(WebView view, int newProgress) {
+            super.onProgressChanged(view, newProgress);
+        }
+
+        @Override
+        public boolean onJsPrompt(WebView view, String url, String message,
+                                  String defaultValue, JsPromptResult result) {
+            // to do your work
+            // ...
+            return super.onJsPrompt(view, url, message, defaultValue, result);
+        }
+
+        @Override
+        public void onReceivedTitle(WebView view, String str) {
+            super.onReceivedTitle(view, str);
+        }
+    }
+
     @Override
     protected void doOperate() {
+        // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    protected void onActivityResult(int arg0, int arg1, Intent arg2) {
+        super.onActivityResult(arg0, arg1, arg2);
+        // 支付完成
+        if (arg1 == RESULT_OK) {
+            if (arg0 == REQUEST_CODE) {
+                setResult(RESULT_OK);
+                finish();
+            }
+        }
     }
 }

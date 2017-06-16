@@ -114,6 +114,37 @@ public class TimeUtil {
 		String time_str = format.format(d1);
 		return time_str;
 	}
+	/**
+	 * 计算时间差
+	 * @return 返回格式,"hh:mm:ss"
+	 */
+	public static String getTimeDifference(long between) {
+		//除以1000是为了转换成秒
+		long hour=between%(24*3600)/3600;
+		long minute=between%3600/60;
+		long second=between%60;
+		StringBuffer time=new StringBuffer();
+		if(hour!=0){
+			time.append(hour+":");
+		}else{
+			time.append("00:");
+		}
+		if(time.length()!=0){
+			time.append(String.format("%02d:", minute));
+		}else if(minute!=0){
+			time.append(String.format("%d:", minute));
+		}else{
+			time.append("00:");
+		}
+		if(time.length()!=0){
+			time.append(String.format("%02d", second));
+		}else if(second!=0){
+			time.append(second);
+		}else{
+			time.append("00");
+		}
+		return time.toString();
+	}
 
 	/**
 	 * 获得时间
