@@ -15,6 +15,7 @@ import com.sharebicycle.utils.WWToast;
 import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
+import com.vise.baseble.ViseBluetooth;
 
 import org.xutils.x;
 
@@ -69,6 +70,7 @@ public class MyApplication extends Application {
 		super.onCreate();
 		instance = this;
 //		install();
+		ViseBluetooth.getInstance().init(this);
 		SharedPreferenceUtils.init(this);
 		x.Ext.init(this);
 		x.Ext.setDebug(true);

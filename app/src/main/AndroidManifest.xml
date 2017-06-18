@@ -230,6 +230,9 @@
         <activity
             android:name="com.sharebicycle.activity.RidingFinishActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.sharebicycle.activity.BTtestActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
