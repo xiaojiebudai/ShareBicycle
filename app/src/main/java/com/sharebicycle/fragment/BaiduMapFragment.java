@@ -106,13 +106,13 @@ public class BaiduMapFragment extends FatherFragment {
                 public void onClick(View view) {
 
                     if (MyApplication.isLogin()) {
-                        if (isPledge) {
+//                        if (isPledge) {
                             Intent intent = new Intent();
                             intent.setClass(getActivity(), ScanActivity.class);
                             BaiduMapFragment.this.startActivityForResult(intent, 888);
-                        } else {
-                            startActivity(new Intent(getActivity(), CashPledgeStep.class));
-                        }
+//                        } else {
+//                            startActivity(new Intent(getActivity(), CashPledgeStep.class));
+//                        }
 
                     } else {
                         startActivity(new Intent(getActivity(), LoginActivity.class));

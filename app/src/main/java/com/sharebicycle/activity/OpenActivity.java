@@ -54,6 +54,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -132,25 +134,7 @@ public class OpenActivity extends FatherActivity {
         LinearInterpolator lin = new LinearInterpolator();
         operatingAnim.setInterpolator(lin);
         infoOperatingIV.startAnimation(operatingAnim);
-        //为计时器绑定监听事件
-        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-            @Override
-            public void onChronometerTick(Chronometer ch) {
-                long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
-                chronometer.setText(TimeUtil.getTimeDifference(time));
-                long hour = time % (24 * 3600) / 3600+1;
-                if (hour > 0) {
-                    if (order.PriceUnit == 30) {
-                        hour = hour * 2;
-                    }
-                    if(consumeNow!=hour){
-                        consumeNow=hour;
-                        tvRidingPrice.setText("当前费用:" + WWViewUtil.numberFormatPrice(consumeNow) + "元");
-                    }
 
-                }
-            }
-        });
 
     }
 
@@ -159,7 +143,7 @@ public class OpenActivity extends FatherActivity {
     public void onBackPressed() {
         if (!isGo) super.onBackPressed();
     }
-
+private   Timer timer;
     @Override
     protected void doOperate() {
         if (model == OPEN) {
@@ -173,7 +157,9 @@ public class OpenActivity extends FatherActivity {
                         finish();
                     }
                 }
-            }, 20000);
+            }, 40000);
+
+
         } else {
             if (order != null && order.Status == 0) {
                 //骑行中
@@ -186,9 +172,18 @@ public class OpenActivity extends FatherActivity {
                 message.what = 1;
                 handler.sendMessage(message);
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-                if (mBluetoothLeService != null) {
-                    final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-                }
+                timer=new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (mBluetoothLeService != null) {
+                            if(!connect_status_bit){
+                                mBluetoothLeService.connect(mDeviceAddress);
+                            }
+                        }
+                    }
+                },500,1000);
+
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
                 //设置开始计时时间
@@ -239,6 +234,7 @@ public class OpenActivity extends FatherActivity {
         dismissWaitDialog();
         unregisterReceiver(mGattUpdateReceiver);
         map.onDestroy();
+        timer.cancel();
     }
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
@@ -318,8 +314,6 @@ public class OpenActivity extends FatherActivity {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 connect_status_bit = true;
-
-
             } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 connect_status_bit = false;
@@ -353,6 +347,7 @@ public class OpenActivity extends FatherActivity {
             if (sbValues.length() >= 5000) sbValues.delete(0, sbValues.length());
 
             if (sbValues.length() == 88) {
+                WWToast.showShort("收到设备反馈");
                 infoReceive(sbValues.toString(), mDeviceAddress);
             }
         }
@@ -371,7 +366,7 @@ public class OpenActivity extends FatherActivity {
         {
             if (connect_status_bit) {
                 mConnected = true;
-
+                WWToast.showShort("蓝牙链接");
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
                 mBluetoothLeService.Delay_ms(100);
@@ -382,7 +377,6 @@ public class OpenActivity extends FatherActivity {
                 WriteBytes[0] = (byte) 0xE7;
                 WriteBytes[1] = (byte) 0xf6;
                 mBluetoothLeService.function_data(WriteBytes);// 发送读取所有IO状态
-
                 if (model == OPEN) {
                     if (sbValues != null && sbValues.length() > 0) {
                         sbValues.delete(0, sbValues.length());
@@ -400,7 +394,7 @@ public class OpenActivity extends FatherActivity {
         {
             if (connect_status_bit) {
                 mConnected = true;
-
+                WWToast.showShort("蓝牙链接");
 
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
@@ -460,11 +454,19 @@ public class OpenActivity extends FatherActivity {
                 message.what = 1;
                 handler.sendMessage(message);
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-                if (mBluetoothLeService != null) {
-                    final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-                }
+                timer=new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (mBluetoothLeService != null) {
+                            if(!connect_status_bit){
+                                mBluetoothLeService.connect(mDeviceAddress);
+                            }
+                        }
+                    }
+                },500,1000);
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-               bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+              bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
 
             }
@@ -496,6 +498,7 @@ public class OpenActivity extends FatherActivity {
             @Override
             public void onAfterSuccessOk(JSONObject data) {
                 Device device = JSONObject.parseObject(data.getString("Data"), Device.class);
+                WWToast.showShort("收到后台验证");
                 switch (device.CommandName) {
                     case Device.INIT:
                         break;
@@ -503,20 +506,19 @@ public class OpenActivity extends FatherActivity {
                         mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                         initDefautHead("骑行中", false);
                         WWToast.showShort("开始用车");
-                        infoOperatingIV.clearAnimation();
-                        //设置开始计时时间
-                        chronometer.setBase(SystemClock.elapsedRealtime());
-                        //启动计时器
-                        chronometer.start();
                         isGo = true;
+
                         llOpening.setVisibility(View.GONE);
                         llOpened.setVisibility(View.VISIBLE);
                         llRiding.setVisibility(View.VISIBLE);
                         getLastOrder(true);
+                        timer.cancel();
+
                         break;
                     case Device.CLOSE:
                         mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                         WWToast.showShort("关锁成功");
+                        timer.cancel();
                         chronometer.stop();
                         initDefautHead("骑行结束", false);
                         llRiding.setVisibility(View.GONE);
@@ -554,6 +556,29 @@ public class OpenActivity extends FatherActivity {
                 if (runing) {
                     //骑行中
                     tvRidingPrice.setText("当前费用:1.00元");
+                    //设置开始计时时间
+                    chronometer.setBase(System.currentTimeMillis());
+                    //为计时器绑定监听事件
+                    chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+                        @Override
+                        public void onChronometerTick(Chronometer ch) {
+                            long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
+                            chronometer.setText(TimeUtil.getTimeDifference(time));
+                            long hour = time % (24 * 3600) / 3600+1;
+                            if (hour > 0) {
+                                if (order.PriceUnit == 30) {
+                                    hour = hour * 2;
+                                }
+                                if(consumeNow!=hour){
+                                    consumeNow=hour;
+                                    tvRidingPrice.setText("当前费用:" + WWViewUtil.numberFormatPrice(consumeNow) + "元");
+                                }
+
+                            }
+                        }
+                    });
+                    //启动计时器
+                    chronometer.start();
                 } else {
                     //骑行结束
                     tvFinishPrice.setText(WWViewUtil.numberFormatPrice(order.PayAmt));
