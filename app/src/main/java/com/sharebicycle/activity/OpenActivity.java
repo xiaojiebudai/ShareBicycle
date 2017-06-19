@@ -150,8 +150,8 @@ public class OpenActivity extends FatherActivity {
     protected void doOperate() {
         if (model == OPEN) {
             sendOpenQr(scanData);
-            handlerTime=new Handler();
-             runnable=new Runnable() {
+            handlerTime = new Handler();
+            runnable = new Runnable() {
                 @Override
                 public void run() {
                     if (!isGo) {
@@ -226,12 +226,19 @@ public class OpenActivity extends FatherActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
-        mBluetoothLeService = null;
+        if (mServiceConnection != null) {
+            unbindService(mServiceConnection);
+        }
         dismissWaitDialog();
-        unregisterReceiver(mGattUpdateReceiver);
+        if (mGattUpdateReceiver != null) {
+            unregisterReceiver(mGattUpdateReceiver);
+        }
+        if (mBluetoothLeService != null) {
+            mBluetoothLeService.disconnect();
+            mBluetoothLeService = null;
+        }
         map.onDestroy();
-        if(handlerTime!=null){
+        if (handlerTime != null) {
             handlerTime.removeCallbacks(runnable);
         }
 
@@ -383,11 +390,11 @@ public class OpenActivity extends FatherActivity {
                     @Override
                     public void run() {
 
-                            if (model == OPEN) {
-                                if (sbValues != null && sbValues.length() > 0) {
-                                    sbValues.delete(0, sbValues.length());
-                                }
-                                mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+                        if (model == OPEN) {
+                            if (sbValues != null && sbValues.length() > 0) {
+                                sbValues.delete(0, sbValues.length());
+                            }
+                            mBluetoothLeService.txxx(openStr, true);//发送字符串数据
 
                         }
                     }
@@ -412,13 +419,13 @@ public class OpenActivity extends FatherActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-WWToast.showShort("openStr");
-                                    if (model == OPEN) {
-                                        if (sbValues != null && sbValues.length() > 0) {
-                                            sbValues.delete(0, sbValues.length());
-                                        }
-                                        mBluetoothLeService.txxx(openStr, true);//发送字符串数据
-                                    }
+                        WWToast.showShort("openStr");
+                        if (model == OPEN) {
+                            if (sbValues != null && sbValues.length() > 0) {
+                                sbValues.delete(0, sbValues.length());
+                            }
+                            mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+                        }
 
 
                     }
