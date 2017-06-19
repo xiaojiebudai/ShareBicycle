@@ -135,7 +135,6 @@ public class OpenActivity extends FatherActivity {
         operatingAnim.setInterpolator(lin);
         infoOperatingIV.startAnimation(operatingAnim);
 
-
     }
 
 
@@ -143,12 +142,16 @@ public class OpenActivity extends FatherActivity {
     public void onBackPressed() {
         if (!isGo) super.onBackPressed();
     }
-private   Timer timer;
+
+    private Handler handlerTime;
+    private Runnable runnable;
+
     @Override
     protected void doOperate() {
         if (model == OPEN) {
             sendOpenQr(scanData);
-            new Handler().postDelayed(new Runnable() {
+            handlerTime=new Handler();
+             runnable=new Runnable() {
                 @Override
                 public void run() {
                     if (!isGo) {
@@ -157,7 +160,8 @@ private   Timer timer;
                         finish();
                     }
                 }
-            }, 40000);
+            };
+            handlerTime.postDelayed(runnable, 40000);
 
 
         } else {
@@ -172,17 +176,10 @@ private   Timer timer;
                 message.what = 1;
                 handler.sendMessage(message);
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-                timer=new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (mBluetoothLeService != null) {
-                            if(!connect_status_bit){
-                                mBluetoothLeService.connect(mDeviceAddress);
-                            }
-                        }
-                    }
-                },500,1000);
+                if (mBluetoothLeService != null) {
+                    mBluetoothLeService.connect(mDeviceAddress);
+
+                }
 
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
@@ -234,8 +231,12 @@ private   Timer timer;
         dismissWaitDialog();
         unregisterReceiver(mGattUpdateReceiver);
         map.onDestroy();
-        timer.cancel();
+        if(handlerTime!=null){
+            handlerTime.removeCallbacks(runnable);
+        }
+
     }
+
     Handler handler = new Handler() {
         public void handleMessage(Message msg) {
             if (msg.what == 1) {
@@ -377,12 +378,20 @@ private   Timer timer;
                 WriteBytes[0] = (byte) 0xE7;
                 WriteBytes[1] = (byte) 0xf6;
                 mBluetoothLeService.function_data(WriteBytes);// 发送读取所有IO状态
-                if (model == OPEN) {
-                    if (sbValues != null && sbValues.length() > 0) {
-                        sbValues.delete(0, sbValues.length());
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                            if (model == OPEN) {
+                                if (sbValues != null && sbValues.length() > 0) {
+                                    sbValues.delete(0, sbValues.length());
+                                }
+                                mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+
+                        }
                     }
-                    mBluetoothLeService.txxx(openStr, true);//发送字符串数据
-                }
+                }, 200);
 
 
             } else {
@@ -394,17 +403,26 @@ private   Timer timer;
         {
             if (connect_status_bit) {
                 mConnected = true;
-                WWToast.showShort("蓝牙链接");
+                WWToast.showShort("蓝牙链接1");
 
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
 
-                if (model == OPEN) {
-                    if (sbValues != null && sbValues.length() > 0) {
-                        sbValues.delete(0, sbValues.length());
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+WWToast.showShort("openStr");
+                                    if (model == OPEN) {
+                                        if (sbValues != null && sbValues.length() > 0) {
+                                            sbValues.delete(0, sbValues.length());
+                                        }
+                                        mBluetoothLeService.txxx(openStr, true);//发送字符串数据
+                                    }
+
+
                     }
-                    mBluetoothLeService.txxx(openStr, true);//发送字符串数据
-                }
+                }, 500);
 
             } else {
                 //Toast.makeText(this, "Deleted Successfully!", Toast.LENGTH_LONG).show();
@@ -454,19 +472,11 @@ private   Timer timer;
                 message.what = 1;
                 handler.sendMessage(message);
                 registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-                timer=new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (mBluetoothLeService != null) {
-                            if(!connect_status_bit){
-                                mBluetoothLeService.connect(mDeviceAddress);
-                            }
-                        }
-                    }
-                },500,1000);
+                if (mBluetoothLeService != null) {
+                    mBluetoothLeService.connect(mDeviceAddress);
+                }
                 Intent gattServiceIntent = new Intent(OpenActivity.this, BluetoothLeService.class);
-              bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+                bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
 
             }
@@ -512,13 +522,13 @@ private   Timer timer;
                         llOpened.setVisibility(View.VISIBLE);
                         llRiding.setVisibility(View.VISIBLE);
                         getLastOrder(true);
-                        timer.cancel();
+
 
                         break;
                     case Device.CLOSE:
                         mBluetoothLeService.txxx(device.CommandText, true);//发送字符串数据
                         WWToast.showShort("关锁成功");
-                        timer.cancel();
+
                         chronometer.stop();
                         initDefautHead("骑行结束", false);
                         llRiding.setVisibility(View.GONE);
@@ -564,13 +574,13 @@ private   Timer timer;
                         public void onChronometerTick(Chronometer ch) {
                             long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
                             chronometer.setText(TimeUtil.getTimeDifference(time));
-                            long hour = time % (24 * 3600) / 3600+1;
+                            long hour = time % (24 * 3600) / 3600 + 1;
                             if (hour > 0) {
                                 if (order.PriceUnit == 30) {
                                     hour = hour * 2;
                                 }
-                                if(consumeNow!=hour){
-                                    consumeNow=hour;
+                                if (consumeNow != hour) {
+                                    consumeNow = hour;
                                     tvRidingPrice.setText("当前费用:" + WWViewUtil.numberFormatPrice(consumeNow) + "元");
                                 }
 
