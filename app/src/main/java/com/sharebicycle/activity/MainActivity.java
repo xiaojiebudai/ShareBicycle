@@ -83,10 +83,10 @@ public class MainActivity extends FatherActivity{
             // 我们通过startActivityForResult()方法发起的Intent将会在onActivityResult()回调方法中获取用户的选择，比如用户单击了Yes开启，
             // 那么将会收到RESULT_OK的结果，
             // 如果RESULT_CANCELED则代表用户不愿意开启蓝牙
-            Intent mIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(mIntent, 1);
+//            Intent mIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivityForResult(mIntent, 1);
             // 用enable()方法来开启，无需询问用户(实惠无声息的开启蓝牙设备),这时就需要用到android.permission.BLUETOOTH_ADMIN权限。
-            // mBluetoothAdapter.enable();
+             mBluetoothAdapter.enable();
             // mBluetoothAdapter.disable();//关闭蓝牙
         }
     }

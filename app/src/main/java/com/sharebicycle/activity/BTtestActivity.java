@@ -71,24 +71,25 @@ private BluetoothGattCharacteristic characteristic;
                 state.setText("链接成功");
                 if (gatt != null) {
                     ZLog.showPost("gatt");
-//                     characteristic = gatt.getService(UUID.fromString(Service_uuid)).getCharacteristic(UUID.fromString(Characteristic_uuid_TX));
-//                    ViseBluetooth.getInstance().enableCharacteristicNotification(characteristic, new IBleCallback<BluetoothGattCharacteristic>() {
-//                        @Override
-//                        public void onSuccess(BluetoothGattCharacteristic bluetoothGattCharacteristic, int type) {
-//                            WWToast.showShort("监听服务成功");
-//                            if (characteristic == null || characteristic.getValue() == null) {
-//                                return;
-//                            }
-////                            ViseLog.i("notify success:" + HexUtil.encodeHexStr(characteristic.getValue()));
-//                            mOutputInfo.append(HexUtil.encodeHexStr(characteristic.getValue())).append("\n");
-//                            info.setText(mOutputInfo.toString());
-//                        }
-//
-//                        @Override
-//                        public void onFailure(BleException exception) {
-//
-//                        }
-//                    }, true);
+                    gatt.getService(UUID.fromString(Service_uuid)).getCharacteristics();
+                     characteristic = gatt.getService(UUID.fromString(Service_uuid)).getCharacteristic(UUID.fromString(Characteristic_uuid_TX));
+                    ViseBluetooth.getInstance().enableCharacteristicNotification(characteristic, new IBleCallback<BluetoothGattCharacteristic>() {
+                        @Override
+                        public void onSuccess(BluetoothGattCharacteristic bluetoothGattCharacteristic, int type) {
+                            WWToast.showShort("监听服务成功");
+                            if (characteristic == null || characteristic.getValue() == null) {
+                                return;
+                            }
+//                            ViseLog.i("notify success:" + HexUtil.encodeHexStr(characteristic.getValue()));
+                            mOutputInfo.append(HexUtil.encodeHexStr(characteristic.getValue())).append("\n");
+                            info.setText(mOutputInfo.toString());
+                        }
+
+                        @Override
+                        public void onFailure(BleException exception) {
+
+                        }
+                    }, true);
 
 //                    txxx(commandText,gatt);
 
