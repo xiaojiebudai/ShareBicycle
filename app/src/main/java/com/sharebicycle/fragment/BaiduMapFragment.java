@@ -106,13 +106,13 @@ public class BaiduMapFragment extends FatherFragment {
                 public void onClick(View view) {
 
                     if (MyApplication.isLogin()) {
-//                        if (isPledge) {
+                        if (isPledge) {
                             Intent intent = new Intent();
                             intent.setClass(getActivity(), ScanActivity.class);
                             BaiduMapFragment.this.startActivityForResult(intent, 888);
-//                        } else {
-//                            startActivity(new Intent(getActivity(), CashPledgeStep.class));
-//                        }
+                        } else {
+                            startActivity(new Intent(getActivity(), CashPledgeStep.class));
+                        }
 
                     } else {
                         startActivity(new Intent(getActivity(), LoginActivity.class));
@@ -204,7 +204,7 @@ public class BaiduMapFragment extends FatherFragment {
 //        如果Status==2就是已经扣完费了
 //        Status==0就表示还没收到关锁信息
                 if (order.Status != 2) {
-//                    BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra(Consts.KEY_DATA, data.getString("Data")).putExtra(Consts.KEY_MODULE, OpenActivity.RIDING));
+                    BaiduMapFragment.this.startActivity(new Intent(getActivity(), OpenActivity.class).putExtra(Consts.KEY_DATA, data.getString("Data")).putExtra(Consts.KEY_MODULE, OpenActivity.RIDING));
                 }
             }
 
