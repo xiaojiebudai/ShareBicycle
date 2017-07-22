@@ -32,6 +32,7 @@ import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.sharebicycle.MyApplication;
 import com.sharebicycle.api.ApiLock;
@@ -107,6 +108,8 @@ public class OpenActivity extends FatherActivity {
     public static final int RIDING = 1;
     private int model;
     private double consumeNow;
+    //当前地理位置
+    private LatLng latLagNow;
 
     @Override
     protected int getLayoutId() {
@@ -185,6 +188,25 @@ public class OpenActivity extends FatherActivity {
                 bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
                 //设置开始计时时间
                 chronometer.setBase(order.BeginTime * 1000);
+                //为计时器绑定监听事件
+                chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+                    @Override
+                    public void onChronometerTick(Chronometer ch) {
+                        long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
+                        chronometer.setText(TimeUtil.getTimeDifference(time));
+                        long hour = time/ 3600 + 1;
+                        if (hour > 0) {
+                            if (order.PriceUnit == 30) {
+                                hour = hour * 2;
+                            }
+                            if (consumeNow != hour) {
+                                consumeNow = hour;
+                                tvRidingPrice.setText("当前费用:" + WWViewUtil.numberFormatPrice(consumeNow) + "元");
+                            }
+
+                        }
+                    }
+                });
                 //启动计时器
                 chronometer.start();
                 isGo = true;
@@ -410,7 +432,7 @@ public class OpenActivity extends FatherActivity {
         {
             if (connect_status_bit) {
                 mConnected = true;
-                WWToast.showShort("蓝牙链接1");
+                WWToast.showShort("蓝牙链接");
 
                 mBluetoothLeService.Delay_ms(100);
                 mBluetoothLeService.enable_JDY_ble(0);
@@ -466,6 +488,10 @@ public class OpenActivity extends FatherActivity {
     private void sendOpenQr(String scanData) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("scanData", scanData);
+        if (latLagNow != null) {
+            jsonObject.put("longitude", latLagNow.longitude);
+            jsonObject.put("latitude", latLagNow.latitude);
+        }
         jsonObject.put(Consts.KEY_SESSIONID, MyApplication
                 .getInstance().getSessionId());
         x.http().post(ParamsUtils.getPostJsonParams(jsonObject, ApiLock.OpenSend()), new WWXCallBack("OpenSend") {
@@ -504,9 +530,12 @@ public class OpenActivity extends FatherActivity {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("receiveData", receiveData);
         jsonObject.put("bluetooth", address);
+        if (latLagNow != null) {
+            jsonObject.put("longitude", latLagNow.longitude);
+            jsonObject.put("latitude", latLagNow.latitude);
+        }
         jsonObject.put(Consts.KEY_SESSIONID, MyApplication
                 .getInstance().getSessionId());
-        ZLog.showPost(receiveData);
         //发送完立马清除
         if (sbValues != null && sbValues.length() > 0) {
             sbValues.delete(0, sbValues.length());
@@ -579,6 +608,7 @@ public class OpenActivity extends FatherActivity {
                     chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
                         @Override
                         public void onChronometerTick(Chronometer ch) {
+                            ZLog.showPost("时间差："+(System.currentTimeMillis() - ch.getBase()));
                             long time = (System.currentTimeMillis() - ch.getBase()) / 1000;
                             chronometer.setText(TimeUtil.getTimeDifference(time));
                             long hour = time % (24 * 3600) / 3600 + 1;
@@ -652,6 +682,7 @@ public class OpenActivity extends FatherActivity {
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                latLagNow = cameraPosition.target;
                 aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
                         cameraPosition.target, 17, 30, 0)));
 

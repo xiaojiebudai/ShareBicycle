@@ -1,16 +1,22 @@
 package com.sharebicycle.activity;
 
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONObject;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.PolylineOptions;
+import com.sharebicycle.been.RidingOrder;
+import com.sharebicycle.utils.Consts;
 import com.sharebicycle.www.R;
 
 import butterknife.BindView;
@@ -38,6 +44,7 @@ public class RidingDetailActivity extends FatherActivity {
     @BindView(R.id.tv_2)
     TextView tv2;
     private AMap aMap;
+    private RidingOrder item;
     @Override
     protected int getLayoutId() {
         return R.layout.act_riding_detail;
@@ -46,10 +53,17 @@ public class RidingDetailActivity extends FatherActivity {
     @Override
     protected void initValues() {
         initDefautHead("行程详情", true);
+        item= JSONObject.parseObject(getIntent().getStringExtra(Consts.KEY_DATA),RidingOrder.class);
     }
 
     @Override
     protected void initView() {
+        tvName.setText(item.UserName);
+        tvNumber.setText("编号："+item.LockId);
+        tvLong.setText(""+item.WayLen);
+        tv0.setText(item.WayLen+"");
+        tv1.setText(item.Carbon+"");
+        tv2.setText(item.Calorie+"");
 
     }
 
@@ -98,6 +112,7 @@ public class RidingDetailActivity extends FatherActivity {
 
             }
         });
+        setUpMap(new LatLng(item.StartLatitude,item.StartLongtitude),new LatLng(item.EndLatitude,item.EndLongtitude));
     }
     @Override
     protected void onDestroy() {
@@ -122,5 +137,15 @@ public class RidingDetailActivity extends FatherActivity {
         super.onSaveInstanceState(outState);
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         map.onSaveInstanceState(outState);
+    }
+    /**
+     * 绘制两个坐标点之间的线段,从以前位置到现在位置
+     */
+    private void setUpMap(LatLng oldData, LatLng newData) {
+        // 绘制一个大地曲线
+        aMap.addPolyline((new PolylineOptions())
+                .add(oldData, newData)
+                .geodesic(true).color(Color.GREEN));
+
     }
 }

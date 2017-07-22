@@ -119,8 +119,8 @@ public class TimeUtil {
 	 * @return 返回格式,"hh:mm:ss"
 	 */
 	public static String getTimeDifference(long between) {
-		//除以1000是为了转换成秒
-		long hour=between%(24*3600)/3600;
+
+		long hour=between/3600;
 		long minute=between%3600/60;
 		long second=between%60;
 		StringBuffer time=new StringBuffer();

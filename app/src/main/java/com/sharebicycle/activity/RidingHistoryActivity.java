@@ -9,12 +9,23 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.github.library.BaseRecyclerAdapter;
 import com.github.library.BaseViewHolder;
 import com.github.library.listener.OnRecyclerItemClickListener;
-import com.sharebicycle.been.Message;
+import com.sharebicycle.MyApplication;
+import com.sharebicycle.api.ApiLock;
+import com.sharebicycle.been.RidingOrder;
+import com.sharebicycle.utils.Consts;
+import com.sharebicycle.utils.TimeUtil;
 import com.sharebicycle.utils.WWToast;
+import com.sharebicycle.utils.WWViewUtil;
 import com.sharebicycle.www.R;
+import com.sharebicycle.xutils.WWXCallBack;
+
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.ArrayList;
 
@@ -36,7 +47,7 @@ public class RidingHistoryActivity extends FatherActivity {
     RecyclerView lvData;
     @BindView(R.id.swipe_layout)
     SwipeRefreshLayout swipeLayout;
-    private ArrayList<Message> list = new ArrayList<Message>();
+    private ArrayList<RidingOrder> list = new ArrayList<RidingOrder>();
     private BaseRecyclerAdapter mAdapter;
     // 分页数据
     private int mCurrentPage = 0;
@@ -75,20 +86,22 @@ public class RidingHistoryActivity extends FatherActivity {
                 }
             }
         });
-        for (int i = 0; i < 20; i++) {
-            list.add(new Message());
-        }
 
-        mAdapter = new BaseRecyclerAdapter<Message>(this, list, R.layout.list_riding_history) {
+
+        mAdapter = new BaseRecyclerAdapter<RidingOrder>(this, list, R.layout.list_riding_history) {
             @Override
-            protected void convert(BaseViewHolder helper, Message item) {
-
+            protected void convert(BaseViewHolder helper, RidingOrder item) {
+                helper.setText(R.id.tv_time, TimeUtil.getTimeToS(item.BeginTime * 1000));
+                helper.setText(R.id.tv_ridingtime,"骑行时间："+( item.EndTime-item.BeginTime)/60+"分钟");
+                helper.setText(R.id.tv_price,WWViewUtil.numberFormatPrice(item.PayAmt));
+                helper.setText(R.id.tv_len,"骑行距离："+item.WayLen+"KM");
+                helper.setText(R.id.tv_no,"编号："+item.LockId);
             }
         };
         mAdapter.setOnRecyclerItemClickListener(new OnRecyclerItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                startActivity(new Intent(RidingHistoryActivity.this,RidingDetailActivity.class));
+                startActivity(new Intent(RidingHistoryActivity.this, RidingDetailActivity.class).putExtra(Consts.KEY_DATA, JSONObject.toJSONString(list.get(position))));
             }
         });
         lvData.setHasFixedSize(true);
@@ -96,14 +109,48 @@ public class RidingHistoryActivity extends FatherActivity {
         lvData.setItemAnimator(new DefaultItemAnimator());
         mAdapter.openLoadAnimation(false);
         lvData.setAdapter(mAdapter);
+
     }
 
     private void requestData() {
+        showWaitDialog();
+        RequestParams params = new RequestParams(ApiLock.Orders());
+        params.addBodyParameter(Consts.KEY_SESSIONID, MyApplication
+                .getInstance().getSessionId());
+        params.addBodyParameter("pageSize", 20 + "");
+        params.addBodyParameter("pageIndex", mCurrentPage + "");
+        x.http().get(params, new WWXCallBack("Orders") {
+
+            @Override
+            public void onAfterSuccessOk(JSONObject data) {
+                mCurrentPage++;
+                list = (ArrayList<RidingOrder>) JSONArray.parseArray(
+                        data.getString("Data"), RidingOrder.class);
+                totalCount = data.getIntValue("PageCount");
+                tv0.setText(data.getString("WayLen"));
+                tv1.setText(data.getString("Carbon"));
+                tv2.setText(data.getString("Calorie"));
+                if (mCurrentPage > 1) {
+                    mAdapter.addData(list);
+                } else {
+                    mAdapter.setData(list);
+                }
+
+            }
+
+            @Override
+            public void onAfterFinished() {
+                dismissWaitDialog();
+                if (mCurrentPage < 2)
+                    swipeLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     protected void doOperate() {
 
+        requestData();
     }
 
     @Override

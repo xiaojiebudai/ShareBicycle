@@ -40,4 +40,22 @@ public class ApiLock extends Api {
     public static final String LastOrder() {
         return ONLINE + "LastOrder";
     }
+    /**
+     * 单车列表
+     * receiveData
+     *
+     * @return
+     */
+    public static final String SearchBike() {
+        return ONLINE + "SearchBike";
+    }
+    /**
+     * 订单列表
+     * receiveData
+     *
+     * @return
+     */
+    public static final String Orders() {
+        return ONLINE + "Orders";
+    }
 }

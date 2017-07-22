@@ -10,6 +10,8 @@ public class AccountInfo {
 
 
     public double AgentAccount;// 属性AgentAccount(代理分润余额)
+    //押金
+    public double ForegiftAmt;
     //余额
     public double Balance;
     //可消费返现

@@ -5,6 +5,13 @@ package com.sharebicycle.been;
  */
 
 public class RidingOrder {
+    public double Calorie;
+    public double Carbon;
+    public double WayLen;
+    public double EndLatitude;
+    public double EndLongtitude;
+    public double StartLatitude;
+    public double StartLongtitude;
     public long BeginTime;
     public String Bluetooth;
     public double DiscountAmt;

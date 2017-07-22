@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -40,6 +41,9 @@ import com.sharebicycle.activity.ScanActivity;
 import com.sharebicycle.api.ApiLock;
 import com.sharebicycle.api.ApiUser;
 import com.sharebicycle.been.AccountInfo;
+import com.sharebicycle.been.BikeInfo;
+import com.sharebicycle.been.Device;
+import com.sharebicycle.been.Message;
 import com.sharebicycle.been.RidingOrder;
 import com.sharebicycle.utils.Consts;
 import com.sharebicycle.utils.DensityUtil;
@@ -50,6 +54,9 @@ import com.sharebicycle.xutils.WWXCallBack;
 
 import org.xutils.http.RequestParams;
 import org.xutils.x;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ZXJ on 2017/5/10.
@@ -136,7 +143,8 @@ public class BaiduMapFragment extends FatherFragment {
 
                 @Override
                 public void onCameraChangeFinish(CameraPosition cameraPosition) {
-
+                    //位置发生改变重新查询单车列表
+                    searchBike(cameraPosition.target);
                 }
             });
 
@@ -156,24 +164,28 @@ public class BaiduMapFragment extends FatherFragment {
 
     }
 
-    private Marker marker;
 
     private void addmark(double latitude, double longitude) {
-
-        if (marker == null) {
-            marker = aMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(latitude, longitude))
-                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                            .decodeResource(getResources(), R.mipmap.arp)))
-                    .draggable(true));
-        } else {
-            marker.setPosition(new LatLng(latitude, longitude));
-            mapView.invalidate();
-        }
-
-
+        Marker marker = aMap.addMarker(new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(), R.mipmap.arp)))
+                .draggable(false));
+        //这行关键，标记Marker的类型xxx
+        marker.setObject("tag");
     }
-
+    //删除指定Marker
+    private void clearMarkers() {
+        //获取地图上所有Marker
+        List<Marker> mapScreenMarkers = aMap.getMapScreenMarkers();
+        for (int i = 0; i < mapScreenMarkers.size(); i++) {
+            Marker marker = mapScreenMarkers.get(i);
+            if (marker.getObject() instanceof String) {
+                marker.remove();//移除当前Marker
+            }
+        }
+        mapView.invalidate();//刷新地图
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -188,6 +200,41 @@ public class BaiduMapFragment extends FatherFragment {
 
     @Override
     protected void initView() {
+
+    }
+
+    /**
+     * 根据定位获取周边单车列表
+     *
+     * @param latLng
+     */
+    private void searchBike(LatLng latLng) {
+        JSONObject jsonObject = new JSONObject();
+        if (latLng != null) {
+            jsonObject.put("longitude", latLng.longitude);
+            jsonObject.put("latitude", latLng.latitude);
+        }
+        x.http().get(ParamsUtils.getPostJsonParams(jsonObject, ApiLock.SearchBike()), new WWXCallBack("SearchBike") {
+            @Override
+            public void onAfterSuccessOk(JSONObject data) {
+                ArrayList<BikeInfo> list = (ArrayList<BikeInfo>) JSONArray.parseArray(
+                        data.getString("Data"), BikeInfo.class);
+                if(list!=null&&list.size()>0){
+
+                    //需要先清除之前的标记
+                    clearMarkers();
+                    for (int i = 0; i <list.size() ; i++) {
+                        addmark(list.get(i).Latitude,list.get(i).Longitude);
+                    }
+                }
+
+
+            }
+
+            @Override
+            public void onAfterFinished() {
+            }
+        });
 
     }
 
@@ -237,7 +284,7 @@ public class BaiduMapFragment extends FatherFragment {
             public void onAfterSuccessOk(JSONObject data) {
                 AccountInfo accountInfo = JSON.parseObject(data.getString("Data"),
                         AccountInfo.class);
-
+                isPledge=accountInfo.ForegiftAmt>0;
                 //获取最后订单
                 getLastOrder();
             }
